@@ -7,7 +7,7 @@ Facilita a administração dos IPs listados no painel Sender Network Data Servic
 Exemplo de Uso:
 
 	>>>import sndslib
-	>>>r = sndslib.get('mykey')
+	>>>r = sndslib.getipstatus('mykey')
 	>>>ips = sndslib.lista(r)
 	>>>print('\n'.join(ips))
 Ou:
@@ -20,7 +20,7 @@ Mais informações em:
 [SNDS Automated Data Access](https://sendersupport.olc.protection.outlook.com/snds/auto.aspx)
 """
 
-def get(key):
+def getipstatus(key):
 	"""Busca IPs bloqueados no SNDS Automated Data Access. Recebe chave de identificação SNDS ADA e retorna um objeto requests.Response com o CSV de ranges bloqueados."""
 
 	from requests import get
