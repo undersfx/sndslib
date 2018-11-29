@@ -21,7 +21,7 @@ Mais informações em:
 """
 
 def getipstatus(key):
-	"""Busca IPs bloqueados no SNDS Automated Data Access. Recebe chave de identificação SNDS ADA e retorna um objeto requests.Response com o CSV de ranges bloqueados."""
+	"""Busca IPs bloqueados no SNDS Automated Data Access. Recebe chave de identificação SNDS ADA para IpStatus e retorna um objeto requests.Response com o CSV de ranges bloqueados."""
 
 	from requests import get
 
@@ -29,13 +29,46 @@ def getipstatus(key):
 
 	return r
 
+def getdata(key):
+	"""Busca os dados de uso do SNDS Automated Data Access. Recebe chave de identificação SNDS ADA para Data e retorna um objeto requests.Response com o CSV de ranges bloqueados."""
+
+	from requests import get
+
+	r = get('https://sendersupport.olc.protection.outlook.com/snds/data.aspx?key=' + key)
+
+	return r
+
+def resumo(response):
+	"""Recebe um requests.Response com os dados do SNDS ADA e retorna a quantidade de IPs Bloqueados"""
+
+	# Transforma os dados do get em uma lista
+	csv = list(response.text.split('\r\n'))
+
+	# Contagem de incidências do status e total de spamtraps
+	resumo = {'red':0, 'green':0, 'yellow':0, 'traps':0, 'ips': len(csv) - 1}
+
+	for i in range(len(csv) - 1):
+		line = csv[i].split(',')
+
+		if line[6] == 'GREEN':
+			resumo['green'] += 1
+		elif line[6] == 'YELLOW':
+			resumo['yellow'] += 1
+		else:
+			resumo['red'] += 1
+
+		if line[10].isnumeric():
+			resumo['traps'] += int(line[10])
+
+	return resumo
+
 def lista(response):
 	"""Recebe um requests.Response com ranges bloqueados e retorna array de todos ips bloqueados."""
 	
 	# Array que recebera o total de IPs bloqueados
 	lista = []
 
-	# Transforma o CSV de retorno em uma lista
+	# Transforma os dados do get em uma lista
 	csv = list(response.text.split('\r\n'))
 
 	rangestart = []
