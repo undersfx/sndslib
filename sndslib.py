@@ -1,4 +1,5 @@
-# sndslib by @undersfx
+#!/usr/bin/env python3
+# SNDSLIB by @undersfx
 
 r"""
 Facilita a administração dos IPs listados no painel Sender Network Data Service (Microsoft).
@@ -8,7 +9,9 @@ Exemplo de Uso:
 	>>>import sndslib
 	>>>r = sndslib.get('mykey')
 	>>>ips = sndslib.lista(r)
-	>>>print('\r\n'.join(ips))
+	>>>print('\n'.join(ips))
+Ou:
+	>>>print('\n'.join(sndslib.reverso(ips)))
 
 Mais informações em:
 
@@ -26,58 +29,66 @@ def get(key):
 
 	return r
 
-def lista(r):
+def lista(response):
 	"""Recebe um requests.Response com ranges bloqueados e retorna array de todos ips bloqueados."""
 	
 	# Array que recebera o total de IPs bloqueados
 	lista = []
 
 	# Transforma o CSV de retorno em uma lista
-	t = list(r.text.split('\r\n'))
+	csv = list(response.text.split('\r\n'))
 
-	ipstart = []
-	ipend = []	
+	rangestart = []
+	rangeend = []
 
 	# Calcula a diferença entre IP de inicio fim do range bloqueado
-	for x in range(len(t) - 1):
-		ipstart.append(t[x].split(',')[0])
-		ipend.append(t[x].split(',')[1])
+	for x in range(len(csv) - 1):
+		rangestart.append(csv[x].split(',')[0])
+		rangeend.append(csv[x].split(',')[1])
 
 		# Adiciona primeiro IP a lista de bloqueado ao array
-		lista.append(ipstart[x])
+		lista.append(rangestart[x])
 
 		# Quebra os octetos do IP para calcular a diferenca entre IP inicial e final
-		a = ipstart[x].split('.')
-		b = ipend[x].split('.')
+		inicial = rangestart[x].split('.')
+		final = rangeend[x].split('.')
 
 		# Calcula o próximo IP bloqueado se existir mais de um no range (inicial != final)
-		while a != b:
-			if int(a[3]) < 255:
-				a[3] = str(int(a[3]) + 1)
-			elif int(a[2]) < 255:
-				a[2] = str(int(a[2]) + 1)
-			elif int(a[1]) < 255:
-				a[1] = str(int(a[1]) + 1)
-			elif int(a[1]) < 255:
-				a[0] = str(int(a[0]) + 1)
+		while inicial != final:
+			if int(inicial[3]) < 255:
+				inicial[3] = str(int(inicial[3]) + 1)
+			elif int(inicial[2]) < 255:
+				inicial[2] = str(int(inicial[2]) + 1)
+			elif int(inicial[1]) < 255:
+				inicial[1] = str(int(inicial[1]) + 1)
+			elif int(inicial[1]) < 255:
+				inicial[0] = str(int(inicial[0]) + 1)
 
 			# Adiciona IP atualizado ao array
-			lista.append('.'.join(a))
+			lista.append('.'.join(inicial))
 
 	return lista
 
-def reverso(r, separador=';'):
-	"""Recebe um objeto requests.Response e retorna um array com o ip e reverso."""
+def reverso(ips, separador=';'):
+	"""Recebe uma lista de IPs e retorna um array com o ip e host."""
 
 	from socket import gethostbyaddr
 
-	dados = lista(r)
-
-	for x in range(len(dados)):
+	# Caso seja passado apenas um IP
+	if type(ips) == str:
 		try:
-			dados[x] = dados[x] + separador + gethostbyaddr(dados[x])[0]
+			ips = ips + separador + gethostbyaddr(ips)
 		except Exception as e:
 			# 'gethostbyaddr' levanta exceção caso o IP não tenha rDNS
-			dados[x] = dados[x] + separador + str(e)
+			ips = ips + separador + str(e)
+			
+		return ips
 
-	return dados
+	# Caso seja passada uma lista de IPs
+	for x in range(len(ips)):
+		try:
+			ips[x] = ips[x] + separador + gethostbyaddr(ips[x])[0]
+		except Exception as e:
+			ips[x] = ips[x] + separador + str(e)
+
+	return ips
