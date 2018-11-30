@@ -20,10 +20,11 @@ Mais informações em:
 [SNDS Automated Data Access](https://sendersupport.olc.protection.outlook.com/snds/auto.aspx)
 """
 
+from requests import get
+from socket import gethostbyaddr
+
 def getipstatus(key):
 	"""Busca IPs bloqueados no SNDS Automated Data Access. Recebe chave de identificação SNDS ADA para IpStatus e retorna um objeto requests.Response com o CSV de ranges bloqueados."""
-
-	from requests import get
 
 	r = get('https://sendersupport.olc.protection.outlook.com/snds/ipStatus.aspx?key=' + key)
 
@@ -31,8 +32,6 @@ def getipstatus(key):
 
 def getdata(key):
 	"""Busca os dados de uso do SNDS Automated Data Access. Recebe chave de identificação SNDS ADA para Data e retorna um objeto requests.Response com o CSV de ranges bloqueados."""
-
-	from requests import get
 
 	r = get('https://sendersupport.olc.protection.outlook.com/snds/data.aspx?key=' + key)
 
@@ -45,10 +44,11 @@ def resumo(response):
 	csv = list(response.text.split('\r\n'))
 
 	# Contagem de incidências do status e total de spamtraps
-	resumo = {'red':0, 'green':0, 'yellow':0, 'traps':0, 'ips': len(csv) - 1}
+	resumo = {'red':0, 'green':0, 'yellow':0, 'traps':0, 'ips': len(csv) - 1, 'date':''}
 
 	for i in range(len(csv) - 1):
 		line = csv[i].split(',')
+
 
 		if line[6] == 'GREEN':
 			resumo['green'] += 1
@@ -59,6 +59,8 @@ def resumo(response):
 
 		if line[10].isnumeric():
 			resumo['traps'] += int(line[10])
+
+	resumo['date'] = line[2][:10]
 
 	return resumo
 
@@ -104,8 +106,6 @@ def lista(response):
 
 def reverso(ips, separador=';'):
 	"""Recebe uma lista de IPs e retorna um array com o ip e host."""
-
-	from socket import gethostbyaddr
 
 	# Caso seja passado apenas um IP
 	if type(ips) == str:
