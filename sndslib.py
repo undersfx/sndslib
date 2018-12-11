@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# SNDSLIB by @undersfx
+# sndslib by @undersfx
 
 r"""
 Facilita a administração dos IPs listados no painel Sender Network Data Service (Microsoft).
@@ -20,20 +20,23 @@ Mais informações em:
 [SNDS Automated Data Access](https://sendersupport.olc.protection.outlook.com/snds/auto.aspx)
 """
 
-from requests import get
+#from requests import get
+from urllib.request import urlopen
 from socket import gethostbyaddr
 
 def getipstatus(key):
 	"""Busca IPs bloqueados no SNDS Automated Data Access. Recebe chave de identificação SNDS ADA para IpStatus e retorna um objeto requests.Response com o CSV de ranges bloqueados."""
 
-	r = get('https://sendersupport.olc.protection.outlook.com/snds/ipStatus.aspx?key=' + key)
+	#r = get('https://sendersupport.olc.protection.outlook.com/snds/ipStatus.aspx?key=' + key) #Requests
+	r = urlopen('https://sendersupport.olc.protection.outlook.com/snds/ipStatus.aspx?key=' + key)
 
 	return r
 
 def getdata(key):
 	"""Busca os dados de uso do SNDS Automated Data Access. Recebe chave de identificação SNDS ADA para Data e retorna um objeto requests.Response com o CSV de ranges bloqueados."""
 
-	r = get('https://sendersupport.olc.protection.outlook.com/snds/data.aspx?key=' + key)
+	#r = get('https://sendersupport.olc.protection.outlook.com/snds/data.aspx?key=' + key) #Requests
+	r = urlopen('https://sendersupport.olc.protection.outlook.com/snds/data.aspx?key=' + key)
 
 	return r
 
@@ -41,7 +44,8 @@ def resumo(response):
 	"""Recebe um requests.Response com os dados do SNDS ADA e retorna a quantidade de IPs Bloqueados"""
 
 	# Transforma os dados do get em uma lista
-	csv = list(response.text.split('\r\n'))
+	#csv = list(response.text.split('\r\n')) #Requests
+	csv = list(response.read().decode('utf-8').split('\r\n'))
 
 	# Contagem de incidências do status e total de spamtraps
 	resumo = {'red':0, 'green':0, 'yellow':0, 'traps':0, 'ips': len(csv) - 1, 'date':''}
@@ -71,7 +75,8 @@ def lista(response):
 	lista = []
 
 	# Transforma os dados do get em uma lista
-	csv = list(response.text.split('\r\n'))
+	#csv = list(response.text.split('\r\n')) #Requests
+	csv = list(response.read().decode('utf-8').split('\r\n'))
 
 	rangestart = []
 	rangeend = []
