@@ -41,7 +41,7 @@ def getdata(key):
 	return r
 
 def resumo(response):
-	"""Recebe um requests.Response com os dados do SNDS ADA e retorna a quantidade de IPs Bloqueados"""
+	"""Recebe um requests.Response com dados dos IPs e retorna um dict com o status geral"""
 
 	# Transforma os dados do get em uma lista
 	#csv = list(response.text.split('\r\n')) #Requests
