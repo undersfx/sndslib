@@ -18,16 +18,16 @@ Mais informações em:
 [SNDS](https://sendersupport.olc.protection.outlook.com/snds/FAQ.aspx?wa=wsignin1.0)
 
 [SNDS Automated Data Access](https://sendersupport.olc.protection.outlook.com/snds/auto.aspx)
+
+[Mitigação de IPs bloqueados](https://support.microsoft.com/en-us/supportrequestform/8ad563e3-288e-2a61-8122-3ba03d6b8d75)
 """
 
-#from requests import get
 from urllib.request import urlopen
 from socket import gethostbyaddr
 
 def getipstatus(key):
 	"""Busca IPs bloqueados no SNDS Automated Data Access. Recebe chave de identificação SNDS ADA para IpStatus e retorna um objeto requests.Response com o CSV de ranges bloqueados."""
 
-	#r = get('https://sendersupport.olc.protection.outlook.com/snds/ipStatus.aspx?key=' + key) #Requests
 	r = urlopen('https://sendersupport.olc.protection.outlook.com/snds/ipStatus.aspx?key=' + key)
 
 	return r
@@ -35,7 +35,6 @@ def getipstatus(key):
 def getdata(key):
 	"""Busca os dados de uso do SNDS Automated Data Access. Recebe chave de identificação SNDS ADA para Data e retorna um objeto requests.Response com o CSV de ranges bloqueados."""
 
-	#r = get('https://sendersupport.olc.protection.outlook.com/snds/data.aspx?key=' + key) #Requests
 	r = urlopen('https://sendersupport.olc.protection.outlook.com/snds/data.aspx?key=' + key)
 
 	return r
@@ -44,7 +43,6 @@ def resumo(response):
 	"""Recebe um requests.Response com dados dos IPs e retorna um dict com o status geral"""
 
 	# Transforma os dados do get em uma lista
-	#csv = list(response.text.split('\r\n')) #Requests
 	csv = list(response.read().decode('utf-8').split('\r\n'))
 
 	# Contagem de incidências do status e total de spamtraps
@@ -75,7 +73,6 @@ def lista(response):
 	lista = []
 
 	# Transforma os dados do get em uma lista
-	#csv = list(response.text.split('\r\n')) #Requests
 	csv = list(response.read().decode('utf-8').split('\r\n'))
 
 	rangestart = []
@@ -117,7 +114,7 @@ def reverso(ips, separador=';'):
 		try:
 			ips = ips + separador + gethostbyaddr(ips)
 		except Exception as e:
-			# 'gethostbyaddr' levanta exceção caso o IP não tenha rDNS
+			# Função 'gethostbyaddr' levanta exceção caso o IP não tenha rDNS
 			ips = ips + separador + str(e)
 			
 		return ips
