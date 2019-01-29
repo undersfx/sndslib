@@ -67,9 +67,9 @@ def resumo(response):
 	return resumo
 
 def lista(response):
-	"""Recebe um requests.Response com ranges bloqueados e retorna array de todos ips bloqueados."""
+	"""Recebe um requests.Response com ranges bloqueados e retorna lista de todos ips bloqueados."""
 	
-	# Array que recebera o total de IPs bloqueados
+	# Lista que receberá o total de IPs bloqueados
 	lista = []
 
 	# Transforma os dados do get em uma lista
@@ -83,7 +83,7 @@ def lista(response):
 		rangestart.append(csv[x].split(',')[0])
 		rangeend.append(csv[x].split(',')[1])
 
-		# Adiciona primeiro IP a lista de bloqueado ao array
+		# Adiciona primeiro IP a lista de bloqueado a lista
 		lista.append(rangestart[x])
 
 		# Quebra os octetos do IP para calcular a diferenca entre IP inicial e final
@@ -101,13 +101,13 @@ def lista(response):
 			elif int(inicial[1]) < 255:
 				inicial[0] = str(int(inicial[0]) + 1)
 
-			# Adiciona IP atualizado ao array
+			# Adiciona IP atualizado a lista
 			lista.append('.'.join(inicial))
 
 	return lista
 
 def reverso(ips, separador=';'):
-	"""Recebe uma lista de IPs e retorna um array com o ip e host."""
+	"""Recebe uma lista de IPs e retorna uma lista com o ip e host."""
 
 	# Caso seja passado apenas um IP
 	if type(ips) == str:
