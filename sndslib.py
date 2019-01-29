@@ -106,24 +106,30 @@ def lista(response):
 
 	return lista
 
-def reverso(ips, separador=';'):
-	"""Recebe uma lista de IPs e retorna uma lista com o ip e host."""
+def reverso(ips):
+	"""Recebe uma lista de IPs e retorna um dict com o ip e host."""
+
+	# Dict que será retornado
+	rdns = {}
 
 	# Caso seja passado apenas um IP
 	if type(ips) == str:
 		try:
-			ips = ips + separador + gethostbyaddr(ips)
+			rdns[str(ips)] = gethostbyaddr(ips)[0]
+
+		# Função 'gethostbyaddr' levanta exceção caso o IP não tenha rDNS
 		except Exception as e:
-			# Função 'gethostbyaddr' levanta exceção caso o IP não tenha rDNS
-			ips = ips + separador + str(e)
-			
-		return ips
+			rdns[str(ips)] = str(e)
+		
+		return rdns
 
 	# Caso seja passada uma lista de IPs
-	for x in range(len(ips)):
+	for ip in ips:
 		try:
-			ips[x] = ips[x] + separador + gethostbyaddr(ips[x])[0]
-		except Exception as e:
-			ips[x] = ips[x] + separador + str(e)
+			rdns[str(ip)] = gethostbyaddr(ip)[0]
 
-	return ips
+		# Função 'gethostbyaddr' levanta exceção caso o IP não tenha rDNS
+		except Exception as e:
+			rdns[str(ip)] = str(e)
+
+	return rdns
