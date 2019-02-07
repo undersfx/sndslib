@@ -30,12 +30,16 @@ def getipstatus(key):
 
 	r = urlopen('https://sendersupport.olc.protection.outlook.com/snds/ipStatus.aspx?key=' + key)
 
+	assert r.status == 200, 'código de retorno inválido: {}'.format(r.status)
+
 	return r
 
 def getdata(key):
 	"""Busca os dados de uso do SNDS Automated Data Access. Recebe chave de identificação SNDS ADA para Data e retorna um objeto requests.Response com o CSV de ranges bloqueados."""
 
 	r = urlopen('https://sendersupport.olc.protection.outlook.com/snds/data.aspx?key=' + key)
+
+	assert r.status == 200, 'código de retorno inválido: {}'.format(r.status)
 
 	return r
 
@@ -68,7 +72,7 @@ def resumo(response):
 
 def lista(response):
 	"""Recebe um requests.Response com ranges bloqueados e retorna lista de todos ips bloqueados."""
-	
+
 	# Lista que receberá o total de IPs bloqueados
 	lista = []
 
@@ -120,7 +124,7 @@ def reverso(ips):
 		# Função 'gethostbyaddr' levanta exceção caso o IP não tenha rDNS
 		except Exception as e:
 			rdns[str(ips)] = str(e)
-		
+
 		return rdns
 
 	# Caso seja passada uma lista de IPs
