@@ -33,11 +33,15 @@ def reverso():
         print(item[0]+';'+item[1])
     print('Blocked: {:>6}'.format(len(dados)))
 
-def status():
+def status(data=None):
     global key, rstatus, rdata, dados
     try:
+        if data:
+            rdata = sndslib.getdata(key, data)
+        else:
+            rdata = sndslib.getdata(key)
+
         rstatus = sndslib.getipstatus(key)
-        rdata = sndslib.getdata(key)
         dados = sndslib.lista(rstatus)
         resumo = sndslib.resumo(rdata)
     except Exception as e:
@@ -78,16 +82,13 @@ def main():
 	# Chamada de funções por parâmetros
     if args.r:
         reverso()
-        pass
     elif args.l:
         lista()
-        pass
 
     if args.data:
-        pass
+        status(args.data)
     elif args.s:
         status()
-        pass
 
 if __name__ == '__main__':
     main()

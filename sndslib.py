@@ -28,16 +28,19 @@ from socket import gethostbyaddr
 def getipstatus(key):
 	"""Busca IPs bloqueados no SNDS Automated Data Access. Recebe chave de identificação SNDS ADA para IpStatus e retorna um objeto requests.Response com o CSV de ranges bloqueados."""
 
-	r = urlopen('https://sendersupport.olc.protection.outlook.com/snds/ipStatus.aspx?key=' + key)
+	r = urlopen('https://sendersupport.olc.protection.outlook.com/snds/ipStatus.aspx?key={}'.format(key))
 
 	assert r.status == 200, 'código de retorno inválido: {}'.format(r.status)
 
 	return r
 
-def getdata(key):
+def getdata(key, date=None):
 	"""Busca os dados de uso do SNDS Automated Data Access. Recebe chave de identificação SNDS ADA para Data e retorna um objeto requests.Response com o CSV de ranges bloqueados."""
 
-	r = urlopen('https://sendersupport.olc.protection.outlook.com/snds/data.aspx?key=' + key)
+	if date:
+		r = urlopen('https://sendersupport.olc.protection.outlook.com/snds/data.aspx?key={}&date={}'.format(key, date))
+	else:
+		r = urlopen('https://sendersupport.olc.protection.outlook.com/snds/data.aspx?key={}'.format(key))
 
 	assert r.status == 200, 'código de retorno inválido: {}'.format(r.status)
 
