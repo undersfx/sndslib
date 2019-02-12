@@ -3,57 +3,22 @@
 
 from argparse import ArgumentParser
 import sndslib
-import time
 
-# DEBUG
-tempo = time.time()
+def print_lista(blocked_ips):    
+    print('\n'.join(blocked_ips))
 
-def lista(key):
-    global rstatus, dados
-    try:
-        rstatus = sndslib.getipstatus(key)
-        dados = sndslib.lista(rstatus)
-    except Exception as e:
-        print('(Erro: {})'.format(e))
-        return
-    
-    print('\n'.join(dados))
-
-def reverso(key):
-    global rstatus, dados
-    try:
-        rstatus = sndslib.getipstatus(key)
-        dados = sndslib.lista(rstatus)
-        rdns = sndslib.reverso(dados)
-    except Exception as e:
-        print('(Erro: {})'.format(e))
-        return
-
+def print_reverso(rdns):
     for item in rdns.items():
         print(item[0]+';'+item[1])
 
-def status(key, data=None):
-    global rstatus, rdata, dados
-    try:
-        if data:
-            rdata = sndslib.getdata(key, data)
-        else:
-            rdata = sndslib.getdata(key)
-
-        rstatus = sndslib.getipstatus(key)
-        dados = sndslib.lista(rstatus)
-        resumo = sndslib.resumo(rdata)
-    except Exception as e:
-        print('(Erro: {})'.format(e))
-        return
-
+def print_status(resumo, blocked_ips):
     print('''\nData: {:>9}
 IPs: {:>10}
 Green: {:>8}
 Yellow: {:>7}
 Red: {:>10}
 Trap Hits: {:>4}'''.format(resumo['date'], resumo['ips'], resumo['green'], resumo['yellow'], resumo['red'], resumo['traps']))
-    print('Blocked: {:>6}'.format(len(dados)))
+    print('Blocked: {:>6}'.format(len(blocked_ips)))
 
 # Instruções dos argumentos
 parser = ArgumentParser(prog='snds',
@@ -79,19 +44,33 @@ group.add_argument('-r', action='store_true',
 def main():
     args = parser.parse_args()
 
+    # Conexão com SNDS
+    try:
+        if args.data:
+            rdata = sndslib.getdata(args.key, args.data)
+        else:
+            rdata = sndslib.getdata(args.key)
+
+        rstatus = sndslib.getipstatus(args.key)
+        blocked_ips = sndslib.lista(rstatus)
+        resumo = sndslib.resumo(rdata)
+
+        if args.r: 
+            rdns = sndslib.reverso(blocked_ips)
+    except Exception as e:
+        print('(Erro: {})'.format(e))
+        return
+
 	# Cadeia de execução dos argumentos
     if args.r:
-        reverso(args.key)
+        print_reverso(rdns)
     elif args.l:
-        lista(args.key)
+        print_lista(blocked_ips)
 
     if args.data:
-        status(args.key, args.data)
+        print_status(resumo, blocked_ips)
     elif args.s:
-        status(args.key)
+        print_status(resumo, blocked_ips)
 
 if __name__ == '__main__':
     main()
-
-    # DEBUG
-    print('Tempo de execução: {:.2f}s'.format(time.time() - tempo))
