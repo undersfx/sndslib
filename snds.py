@@ -5,9 +5,10 @@ from argparse import ArgumentParser
 import sndslib
 import time
 
+# DEBUG
 tempo = time.time()
 
-def lista():
+def lista(key):
     global rstatus, dados
     try:
         rstatus = sndslib.getipstatus(key)
@@ -17,10 +18,9 @@ def lista():
         return
     
     print('\n'.join(dados))
-    print('Blocked: {:>6}'.format(len(dados)))
 
-def reverso():
-    global key, rstatus, dados
+def reverso(key):
+    global rstatus, dados
     try:
         rstatus = sndslib.getipstatus(key)
         dados = sndslib.lista(rstatus)
@@ -31,10 +31,9 @@ def reverso():
 
     for item in rdns.items():
         print(item[0]+';'+item[1])
-    print('Blocked: {:>6}'.format(len(dados)))
 
-def status(data=None):
-    global key, rstatus, rdata, dados
+def status(key, data=None):
+    global rstatus, rdata, dados
     try:
         if data:
             rdata = sndslib.getdata(key, data)
@@ -47,7 +46,7 @@ def status(data=None):
     except Exception as e:
         print('(Erro: {})'.format(e))
         return
-    
+
     print('''\nData: {:>9}
 IPs: {:>10}
 Green: {:>8}
@@ -62,35 +61,37 @@ parser = ArgumentParser(prog='snds',
                         epilog='Para arquivo de configuração: snds @<filename>',
                         fromfile_prefix_chars='@') # Passar parâmetros via arquivos (e.g. snds -s @parametros.txt)
 
+parser.add_argument('-k', action='store', dest='key',
+                    help='chave de acesso snds automated data access', required=True)
 parser.add_argument('-s', action='store_true',
                     help='retorna o status geral da data mais recente')
-parser.add_argument('-l', action='store_true',
-                    help='retorna a lista de IPs bloqueados')
-parser.add_argument('-r', action='store_true',
-                    help='retorna a lista de IPs bloqueados com reversos')
 parser.add_argument('-d', action='store', dest='data',
-                    help='retorna o status geral na data informada (formato=MMDDYY)')
-parser.add_argument('-k', action='store', dest='key',
-                    help='chave de acesso snds automated data access', required=True)                    
+                    help='retorna o status geral na data informada (formato=MMDDYY)')                 
 
+group = parser.add_mutually_exclusive_group()
+
+group.add_argument('-l', action='store_true',
+                    help='retorna a lista de IPs bloqueados')
+group.add_argument('-r', action='store_true',
+                    help='retorna a lista de IPs bloqueados com reversos')
+
+# Parse e execução dos argumentos
 def main():
     args = parser.parse_args()
 
-    global key, dados, rstatus, rdata
-    if args.key: key = args.key
-
-	# Chamada de funções por parâmetros
+	# Cadeia de execução dos argumentos
     if args.r:
-        reverso()
+        reverso(args.key)
     elif args.l:
-        lista()
+        lista(args.key)
 
     if args.data:
-        status(args.data)
+        status(args.key, args.data)
     elif args.s:
-        status()
+        status(args.key)
 
 if __name__ == '__main__':
     main()
 
-    print('\nTempo de execução: {:.2f}s'.format(time.time() - tempo))
+    # DEBUG
+    print('Tempo de execução: {:.2f}s'.format(time.time() - tempo))
