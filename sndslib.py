@@ -24,6 +24,7 @@ Mais informações em:
 
 from urllib.request import urlopen
 from socket import gethostbyaddr
+import re
 
 def getipstatus(key):
 	"""Busca IPs bloqueados no SNDS Automated Data Access. Recebe chave de identificação SNDS ADA para IpStatus e retorna um objeto requests.Response com o CSV de ranges bloqueados."""
@@ -72,6 +73,35 @@ def resumo(response):
 	resumo['date'] = line[2][:10]
 
 	return resumo
+
+def search_ip_status(ip, rdata):
+
+	csv = list(rdata.read().decode('utf-8').split('\r\n'))
+
+	for line in csv:
+		if re.search(ip, line):
+			line = line.split(',')
+			break
+	else:
+		return None
+	
+	ip_data = {'ip_address':line[0],
+				'activity_start':line[1],
+				'activity_end':line[2],
+				'rcpt_commands':line[3],
+				'data_commands':line[4],
+				'message_recipients':line[5], 
+				'filter_result':line[6], 
+				'complaint_rate':line[7],
+				'trap_message_start':line[8],
+				'trap_message_end':line[9],
+				'traphits':line[10],
+				'sample_helo':line[11],
+				'sample_mailfrom':line[11],
+				'comments':line[12],
+			}
+
+	return ip_data
 
 def lista(response):
 	"""Recebe um requests.Response com ranges bloqueados e retorna lista de todos ips bloqueados."""
