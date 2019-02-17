@@ -10,8 +10,6 @@ Exemplo de Uso:
 	>>>r = sndslib.getipstatus('mykey')
 	>>>ips = sndslib.lista(r)
 	>>>print('\n'.join(ips))
-Ou:
-	>>>print('\n'.join(sndslib.reverso(ips)))
 
 Mais informações em:
 
@@ -27,7 +25,7 @@ from socket import gethostbyaddr
 import re
 
 def getipstatus(key):
-	"""Busca IPs bloqueados no SNDS Automated Data Access. Recebe chave de identificação SNDS ADA para IpStatus e retorna um objeto requests.Response com o CSV de ranges bloqueados."""
+	"""Busca os ranges bloqueados no SNDS Automated Data Access. (str -> http.client.HTTPResponse)"""
 
 	r = urlopen('https://sendersupport.olc.protection.outlook.com/snds/ipStatus.aspx?key={}'.format(key))
 
@@ -36,7 +34,7 @@ def getipstatus(key):
 	return r
 
 def getdata(key, date=None):
-	"""Busca os dados de uso do SNDS Automated Data Access. Recebe chave de identificação SNDS ADA para Data e retorna um objeto requests.Response com o CSV de ranges bloqueados."""
+	"""Busca os dados de uso dos IP no SNDS Automated Data Access. (str, str=None -> http.client.HTTPResponse)"""
 
 	if date:
 		r = urlopen('https://sendersupport.olc.protection.outlook.com/snds/data.aspx?key={}&date={}'.format(key, date))
@@ -48,7 +46,7 @@ def getdata(key, date=None):
 	return r
 
 def resumo(response):
-	"""Recebe um requests.Response com dados dos IPs e retorna um dict com o status geral"""
+	"""Recebe a tabela com dados de uso dos IPs (getdata) e retorna um dict com o status geral. (http.client.HTTPResponse -> dict)"""
 
 	# Transforma os dados do get em uma lista
 	csv = list(response.read().decode('utf-8').split('\r\n'))
@@ -74,17 +72,18 @@ def resumo(response):
 
 	return resumo
 
-def search_ip_status(ip, rdata):
+def search_ip_status(ip, getdata):
+	"""Porcura pelos status de um IP especifico nos dados de uso (getdata). (str, http.client.HTTPResponse -> dict)"""
 
-	csv = list(rdata.read().decode('utf-8').split('\r\n'))
+	csv = list(getdata.read().decode('utf-8').split('\r\n'))
 
 	for line in csv:
 		if re.search(ip, line):
 			line = line.split(',')
 			break
 	else:
-		return None
-	
+		return False
+
 	ip_data = {'ip_address':line[0],
 				'activity_start':line[1],
 				'activity_end':line[2],
@@ -104,7 +103,7 @@ def search_ip_status(ip, rdata):
 	return ip_data
 
 def lista(response):
-	"""Recebe um requests.Response com ranges bloqueados e retorna lista de todos ips bloqueados."""
+	"""Recebe a tabela de ranges bloqueados (getipstatus) e retorna lista de todos ips. (http.client.HTTPResponse -> list)"""
 
 	# Lista que receberá o total de IPs bloqueados
 	lista = []
@@ -144,7 +143,7 @@ def lista(response):
 	return lista
 
 def reverso(ips):
-	"""Recebe uma lista de IPs e retorna um dict com o ip e host."""
+	"""Encontra o host de uma lista de endereços IP. (list -> dict)"""
 
 	# Dict que será retornado
 	rdns = {}

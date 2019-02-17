@@ -85,7 +85,7 @@ def main():
         print_status(resumo, blocked_ips)
     elif args.ip:
         ipdata = sndslib.search_ip_status(args.ip, rdata)
-        print_ipdata(ipdata)
+        if ipdata: print_ipdata(ipdata)
 
 if __name__ == '__main__':
     main()
