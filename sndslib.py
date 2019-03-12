@@ -21,7 +21,7 @@ Mais informações em:
 """
 
 from urllib.request import urlopen
-from socket import gethostbyaddr
+from socket import gethostbyaddr, inet_aton
 import re
 
 def getipstatus(key):
@@ -149,23 +149,29 @@ def reverso(ips):
 	rdns = {}
 
 	# Caso seja passado apenas um IP
-	if type(ips) == str:
+	if not type(ips) == list:
 		try:
+			ips = str(ips)
+			# Verifica se é um IP válido
+			inet_aton(ips)
 			rdns[str(ips)] = gethostbyaddr(ips)[0]
-
-		# Função 'gethostbyaddr' levanta exceção caso o IP não tenha rDNS
+		except OSError:
+			rdns[ips] = '{} is not a valid IP address.'.format(ips)
+			return rdns
 		except Exception as e:
+			# 'gethostbyaddr' levanta exceção caso o IP não tenha reverso
 			rdns[str(ips)] = str(e)
 
 		return rdns
+	else:
+		# Caso seja passada uma lista de IPs
+		for ip in ips:
+			try:
+				inet_aton(ip)
+				rdns[str(ip)] = gethostbyaddr(ip)[0]
+			except OSError:
+				rdns[str(ip)] = '{} is not a valid IP address.'.format(ip)
+			except Exception as e:
+				rdns[str(ip)] = str(e)
 
-	# Caso seja passada uma lista de IPs
-	for ip in ips:
-		try:
-			rdns[str(ip)] = gethostbyaddr(ip)[0]
-
-		# Função 'gethostbyaddr' levanta exceção caso o IP não tenha rDNS
-		except Exception as e:
-			rdns[str(ip)] = str(e)
-
-	return rdns
+		return rdns
