@@ -132,10 +132,13 @@ def lista(response):
 				inicial[3] = str(int(inicial[3]) + 1)
 			elif int(inicial[2]) < 255:
 				inicial[2] = str(int(inicial[2]) + 1)
+				inicial[3] = '0'
 			elif int(inicial[1]) < 255:
 				inicial[1] = str(int(inicial[1]) + 1)
+				inicial[2] = inicial[3] = '0'
 			elif int(inicial[1]) < 255:
 				inicial[0] = str(int(inicial[0]) + 1)
+				inicial[1] = inicial[2] = inicial[3] = '0'
 
 			# Adiciona IP atualizado a lista
 			lista.append('.'.join(inicial))
