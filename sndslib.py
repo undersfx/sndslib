@@ -21,7 +21,7 @@ Mais informações em:
 """
 
 from urllib.request import urlopen
-from socket import gethostbyaddr, inet_aton
+from socket import gethostbyaddr
 import re
 
 def getipstatus(key):
