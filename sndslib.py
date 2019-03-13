@@ -143,35 +143,28 @@ def lista(response):
 	return lista
 
 def reverso(ips):
-	"""Encontra o host de uma lista de endereços IP. (list -> dict)"""
+	"""Encontra o host de uma lista de endereços IP. (list -> list[dict])"""
 
-	# Dict que será retornado
-	rdns = {}
+	rdns = []
 
-	# Caso seja passado apenas um IP
 	if not type(ips) == list:
+		# Caso seja passado apenas um IP
 		try:
 			ips = str(ips)
-			# Verifica se é um IP válido
-			inet_aton(ips)
-			rdns[str(ips)] = gethostbyaddr(ips)[0]
-		except OSError:
-			rdns[ips] = '{} is not a valid IP address.'.format(ips)
-			return rdns
+			reverso = gethostbyaddr(ips)[0]
+			rdns.append({'ip':ips, 'rdns':reverso})
 		except Exception as e:
 			# 'gethostbyaddr' levanta exceção caso o IP não tenha reverso
-			rdns[str(ips)] = str(e)
+			rdns.append({'ip':ips, 'rdns':str(e)})
 
 		return rdns
 	else:
 		# Caso seja passada uma lista de IPs
 		for ip in ips:
 			try:
-				inet_aton(ip)
-				rdns[str(ip)] = gethostbyaddr(ip)[0]
-			except OSError:
-				rdns[str(ip)] = '{} is not a valid IP address.'.format(ip)
+				reverso = gethostbyaddr(ip)[0]
+				rdns.append({'ip':str(ip), 'rdns':reverso})
 			except Exception as e:
-				rdns[str(ip)] = str(e)
+				rdns.append({'ip':str(ip), 'rdns':str(e)})
 
 		return rdns

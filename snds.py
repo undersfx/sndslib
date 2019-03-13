@@ -8,8 +8,8 @@ def print_lista(blocked_ips):
     print('\n'.join(blocked_ips))
 
 def print_reverso(rdns):
-    for item in rdns.items():
-        print(item[0]+';'+item[1])
+    for ip in rdns:
+        print(ip['ip'] + ';' + ip['rdns'])
 
 def print_status(resumo, blocked_ips):
     print('''Data: {:>9}
