@@ -35,7 +35,7 @@ parser = ArgumentParser(prog='snds',
                         fromfile_prefix_chars='@') # Pass parameters through files (e.g. snds -s @parameters.txt)
 
 parser.add_argument('-k', action='store', dest='key',
-                    help='snds acess key automated data access', required=True)
+                    help='snds access key automated data access', required=True)
 
 group1 = parser.add_mutually_exclusive_group()
 
