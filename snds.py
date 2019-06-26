@@ -28,38 +28,38 @@ Filter: {:>11}
 Complaint: {:>8}
 Trap Hits: {:>8}'''.format(ipdata['ip_address'], ipdata['activity_start'], ipdata['activity_end'], ipdata['message_recipients'], ipdata['filter_result'], ipdata['complaint_rate'], ipdata['traphits']))
 
-# Instruções dos argumentos
+# Argument's instructions
 parser = ArgumentParser(prog='snds',
-                        description='Busca e formata informações do painel SNDS.',
-                        epilog='Para arquivo de configuração: snds @<filename>',
-                        fromfile_prefix_chars='@') # Passar parâmetros via arquivos (e.g. snds -s @parametros.txt)
+                        description='Searches and formats the SNDS dashboard data',
+                        epilog='For configuration file: snds @<filename>',
+                        fromfile_prefix_chars='@') # Pass parameters through files (e.g. snds -s @parameters.txt)
 
 parser.add_argument('-k', action='store', dest='key',
-                    help='chave de acesso snds automated data access', required=True)
+                    help='snds access key automated data access', required=True)
 
 group1 = parser.add_mutually_exclusive_group()
 
 group1.add_argument('-s', action='store_true',
-                    help='retorna o status geral da data mais recente')
+                    help='returns the general status of the most recent data')
 
 group1.add_argument('-ip', action='store',
-                    help='retorna o status completo do IP informado')
+                    help='returns the complete status of informed IP')
 
 parser.add_argument('-d', action='store', dest='data',
-                    help='retorna o status geral na data informada (formato=MMDDYY)')                 
+                    help='returns the general status on informed date (format=MMDDYY)')                 
 
 group2 = parser.add_mutually_exclusive_group()
 
 group2.add_argument('-l', action='store_true',
-                    help='retorna a lista de IPs bloqueados')
+                    help='returns the blocked IPs list')
 group2.add_argument('-r', action='store_true',
-                    help='retorna a lista de IPs bloqueados com reversos')
+                    help='returns the blocked IPs list with reverses')
 
-# Parse e execução dos argumentos
+# Parse and execution of the arguments
 def main():
     args = parser.parse_args()
 
-    # Conexão com SNDS
+    # Conection with SNDS
     try:
         if args.data:
             rdata = sndslib.getdata(args.key, args.data)
@@ -73,7 +73,7 @@ def main():
         print('(Erro: {})'.format(e))
         return
 
-	# Cadeia de execução dos argumentos    
+	# Arguments execution chain
     if args.r:
         rdns = sndslib.reverso(blocked_ips)
         print_reverso(rdns)
