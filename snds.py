@@ -59,7 +59,7 @@ group2.add_argument('-r', action='store_true',
 def main():
     args = parser.parse_args()
 
-    # Conection wiht SNDS
+    # Conection with SNDS
     try:
         if args.data:
             rdata = sndslib.getdata(args.key, args.data)
@@ -73,7 +73,7 @@ def main():
         print('(Erro: {})'.format(e))
         return
 
-	# Execution chain of the arguments  
+	# Arguments execution chain
     if args.r:
         rdns = sndslib.reverso(blocked_ips)
         print_reverso(rdns)
