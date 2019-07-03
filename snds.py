@@ -62,12 +62,12 @@ def main():
     # Conection with SNDS
     try:
         if args.data:
-            rdata = sndslib.getdata(args.key, args.data)
+            rdata = sndslib.get_data(args.key, args.data)
         else:
-            rdata = sndslib.getdata(args.key)
+            rdata = sndslib.get_data(args.key)
 
         if not args.ip:
-            rstatus = sndslib.getipstatus(args.key)
+            rstatus = sndslib.get_ip_status(args.key)
             blocked_ips = sndslib.lista(rstatus)
     except Exception as e:
         print('(Erro: {})'.format(e))

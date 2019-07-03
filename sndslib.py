@@ -7,7 +7,7 @@ Facilita a administração dos IPs listados no painel Sender Network Data Servic
 Exemplo de Uso:
 
 	>>>import sndslib
-	>>>r = sndslib.getipstatus('mykey')
+	>>>r = sndslib.get_ip_status('mykey')
 	>>>ips = sndslib.lista(r)
 	>>>print('\n'.join(ips))
 
@@ -24,7 +24,7 @@ from urllib.request import urlopen
 from socket import gethostbyaddr
 import re
 
-def getipstatus(key):
+def get_ip_status(key):
 	"""Busca os ranges bloqueados no SNDS Automated Data Access. (str -> http.client.HTTPResponse)"""
 
 	r = urlopen('https://sendersupport.olc.protection.outlook.com/snds/ipStatus.aspx?key={}'.format(key))
@@ -33,7 +33,7 @@ def getipstatus(key):
 
 	return r
 
-def getdata(key, date=None):
+def get_data(key, date=None):
 	"""Busca os dados de uso dos IP no SNDS Automated Data Access. (str, str=None -> http.client.HTTPResponse)"""
 
 	if date:
@@ -46,7 +46,7 @@ def getdata(key, date=None):
 	return r
 
 def resumo(response):
-	"""Recebe a tabela com dados de uso dos IPs (getdata) e retorna um dict com o status geral. (http.client.HTTPResponse -> dict)"""
+	"""Recebe a tabela com dados de uso dos IPs (get_data) e retorna um dict com o status geral. (http.client.HTTPResponse -> dict)"""
 
 	# Transforma os dados do get em uma lista
 	csv = list(response.read().decode('utf-8').split('\r\n'))
@@ -72,10 +72,10 @@ def resumo(response):
 
 	return resumo
 
-def search_ip_status(ip, getdata):
-	"""Porcura pelos status de um IP especifico nos dados de uso (getdata). (str, http.client.HTTPResponse -> dict)"""
+def search_ip_status(ip, ips_data):
+	"""Porcura pelos status de um IP especifico nos dados de uso (ips_data). (str, http.client.HTTPResponse -> dict)"""
 
-	csv = list(getdata.read().decode('utf-8').split('\r\n'))
+	csv = list(ips_data.read().decode('utf-8').split('\r\n'))
 
 	for line in csv:
 		if re.search(ip, line):
@@ -103,7 +103,7 @@ def search_ip_status(ip, getdata):
 	return ip_data
 
 def lista(response):
-	"""Recebe a tabela de ranges bloqueados (getipstatus) e retorna lista de todos ips. (http.client.HTTPResponse -> list)"""
+	"""Recebe a tabela de ranges bloqueados (get_ip_status) e retorna lista de todos ips. (http.client.HTTPResponse -> list)"""
 
 	# Lista que receberá o total de IPs bloqueados
 	lista = []
