@@ -4,7 +4,7 @@
 from argparse import ArgumentParser
 import sndslib
 
-def print_lista(blocked_ips):    
+def print_lista(blocked_ips):
     print('\n'.join(blocked_ips))
 
 def print_reverso(rdns):
@@ -46,7 +46,7 @@ group1.add_argument('-ip', action='store',
                     help='returns the complete status of informed IP')
 
 parser.add_argument('-d', action='store', dest='data',
-                    help='returns the general status on informed date (format=MMDDYY)')                 
+                    help='returns the general status on informed date (format=MMDDYY)')
 
 group2 = parser.add_mutually_exclusive_group()
 
@@ -73,7 +73,7 @@ def main():
         print('(Erro: {})'.format(e))
         return
 
-	# Arguments execution chain
+    # Arguments execution chain
     if args.r:
         rdns = sndslib.reverso(blocked_ips)
         print_reverso(rdns)
@@ -85,7 +85,7 @@ def main():
         print_status(resumo, blocked_ips)
     elif args.ip:
         ipdata = sndslib.search_ip_status(args.ip, rdata)
-        if ipdata: 
+        if ipdata:
             print_ipdata(ipdata)
         else:
             print('IP not found')
