@@ -21,7 +21,7 @@ Mais informações em:
 """
 
 from urllib.request import urlopen
-from socket import gethostbyaddr
+import socket
 import re
 
 def get_ip_status(key):
@@ -150,14 +150,14 @@ def reverso(ips):
 
 	rdns = []
 
-	if not type(ips) == list:
+	if not isinstance(ips, list):
 		# Caso seja passado apenas um IP
 		try:
 			ips = str(ips)
-			reverso = gethostbyaddr(ips)[0]
+			reverso = socket.gethostbyaddr(ips)[0]
 			rdns.append({'ip':ips, 'rdns':reverso})
-		except Exception as e:
-			# 'gethostbyaddr' levanta exceção caso o IP não tenha reverso
+		except socket.error as e:
+			# 'socket.gethostbyaddr' levanta exceção caso o IP não tenha reverso
 			rdns.append({'ip':ips, 'rdns':str(e)})
 
 		return rdns
@@ -165,9 +165,9 @@ def reverso(ips):
 		# Caso seja passada uma lista de IPs
 		for ip in ips:
 			try:
-				reverso = gethostbyaddr(ip)[0]
+				reverso = socket.gethostbyaddr(ip)[0]
 				rdns.append({'ip':str(ip), 'rdns':reverso})
-			except Exception as e:
+			except socket.error as e:
 				rdns.append({'ip':str(ip), 'rdns':str(e)})
 
 		return rdns
