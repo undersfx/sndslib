@@ -4,38 +4,54 @@
 from argparse import ArgumentParser
 import sndslib
 
+
 def print_lista(blocked_ips):
     print('\n'.join(blocked_ips))
+
 
 def print_reverso(rdns):
     for ip in rdns:
         print(ip['ip'] + ';' + ip['rdns'])
 
+
 def print_status(resumo, blocked_ips):
-    print('''Data: {:>9}
-IPs: {:>10}
-Green: {:>8}
-Yellow: {:>7}
-Red: {:>10}
-Trap Hits: {:>4}'''.format(resumo['date'], resumo['ips'], resumo['green'], resumo['yellow'], resumo['red'], resumo['traps']))
-    print('Blocked: {:>6}'.format(len(blocked_ips)))
+    message = (
+        f"Data: {resumo['date']:>9} \n"
+        f"IPs: {resumo['ips']:>10} \n"
+        f"Green: {resumo['green']:>8} \n"
+        f"Yellow: {resumo['yellow']:>7} \n"
+        f"Red: {resumo['red']:>10} \n"
+        f"Trap Hits: {resumo['traps']:>4} \n"
+        f"Blocked: {len(blocked_ips):>6}"
+    )
+
+    print(message)
+
 
 def print_ipdata(ipdata):
-    print('''IP: {:>15}
-Activity: {} until {}
-Messages: {:>9}
-Filter: {:>11}
-Complaint: {:>8}
-Trap Hits: {:>8}'''.format(ipdata['ip_address'], ipdata['activity_start'], ipdata['activity_end'], ipdata['message_recipients'], ipdata['filter_result'], ipdata['complaint_rate'], ipdata['traphits']))
+    message = (
+        f"Activity: {ipdata['activity_start']} until {ipdata['activity_end']} \n"
+        f"IP: {ipdata['ip_address']:>15} \n"
+        f"Messages: {ipdata['message_recipients']:>9} \n"
+        f"Filter: {ipdata['filter_result']:>11} \n"
+        f"Complaint: {ipdata['complaint_rate']:>8} \n"
+        f"Trap Hits: {ipdata['traphits']:>8} \n"
+    )
+
+    print(message)
+
 
 # Argument's instructions
 parser = ArgumentParser(prog='snds',
-                        description='Searches and formats the SNDS dashboard data',
-                        epilog='For configuration file: snds @<filename>',
-                        fromfile_prefix_chars='@') # Pass parameters through files (e.g. snds -s @parameters.txt)
+                        description='Searches and formats the SNDS \
+                            dashboard data',
+                        epilog='You can also use a configuration file using @\
+                            (e.g. "snds -s @parameters.txt")',
+                        fromfile_prefix_chars='@')
 
 parser.add_argument('-k', action='store', dest='key',
-                    help='snds access key automated data access', required=True)
+                    help='snds access key automated data access',
+                    required=True)
 
 group1 = parser.add_mutually_exclusive_group()
 
@@ -52,8 +68,10 @@ group2 = parser.add_mutually_exclusive_group()
 
 group2.add_argument('-l', action='store_true',
                     help='returns the blocked IPs list')
+
 group2.add_argument('-r', action='store_true',
                     help='returns the blocked IPs list with reverses')
+
 
 # Parse and execution of the arguments
 def main():
@@ -89,6 +107,7 @@ def main():
             print_ipdata(ipdata)
         else:
             print('IP not found')
+
 
 if __name__ == '__main__':
     main()
