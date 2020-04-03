@@ -90,7 +90,7 @@ def main():
             rstatus = sndslib.get_ip_status(args.key)
             blocked_ips = sndslib.lista(rstatus)
     except AssertionError as e:
-        print('(Erro: {})'.format(e))
+        print(e)
         return
 
     # Arguments execution chain

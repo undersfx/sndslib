@@ -23,7 +23,7 @@ def get_ip_status(key):
 
     r = urlopen('https://sendersupport.olc.protection.outlook.com/snds/ipStatus.aspx?key={}'.format(key))
 
-    assert r.status == 200, 'código de retorno inválido: {}'.format(r.status)
+    assert r.status == 200, 'Invalid return code: {}'.format(r.status)
 
     return r
 
@@ -37,7 +37,7 @@ def get_data(key, date=None):
     else:
         r = urlopen('https://sendersupport.olc.protection.outlook.com/snds/data.aspx?key={}'.format(key))
 
-    assert r.status == 200, 'código de retorno inválido: {}'.format(r.status)
+    assert r.status == 200, 'Invalid return code: {}'.format(r.status)
 
     return r
 
