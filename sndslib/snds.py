@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # snds command by @undersfx
 
-from argparse import ArgumentParser
 import sndslib
+from argparse import ArgumentParser
+from __init__ import __version__
 
 
 def print_lista(blocked_ips):
@@ -45,13 +46,19 @@ def print_ipdata(ipdata):
 parser = ArgumentParser(prog='snds',
                         description='Searches and formats the SNDS \
                             dashboard data',
-                        epilog='You can also use a configuration file using @\
+                        epilog='You can also use a configuration file using @ \
                             (e.g. "snds -s @parameters.txt")',
                         fromfile_prefix_chars='@')
+
+parser.add_argument('-V', '--version', action='version', version=f'sndslib version {__version__}',
+                    help='returns the version of sndslib')
 
 parser.add_argument('-k', action='store', dest='key',
                     help='snds access key automated data access',
                     required=True)
+
+parser.add_argument('-d', action='store', dest='data',
+                    help='returns the general status on informed date (format=MMDDYY)')
 
 group1 = parser.add_mutually_exclusive_group()
 
@@ -61,15 +68,10 @@ group1.add_argument('-s', action='store_true',
 group1.add_argument('-ip', action='store',
                     help='returns the complete status of informed IP')
 
-parser.add_argument('-d', action='store', dest='data',
-                    help='returns the general status on informed date (format=MMDDYY)')
-
-group2 = parser.add_mutually_exclusive_group()
-
-group2.add_argument('-l', action='store_true',
+group1.add_argument('-l', action='store_true',
                     help='returns the blocked IPs list')
 
-group2.add_argument('-r', action='store_true',
+group1.add_argument('-r', action='store_true',
                     help='returns the blocked IPs list with reverses')
 
 
