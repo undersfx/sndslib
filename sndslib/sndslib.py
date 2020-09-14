@@ -42,7 +42,7 @@ def get_data(key, date=None):
     return r
 
 
-def resumo(response):
+def summarize(response):
     """Recebe a tabela com dados de uso dos IPs (get_data) e retorna um dict com o status geral."""
     # FIXME: (http.client.HTTPResponse -> dict)
 
@@ -50,24 +50,24 @@ def resumo(response):
     csv = list(response.read().decode('utf-8').split('\r\n'))
 
     # Contagem de incidências do status e total de spamtraps
-    resumo = {'red': 0, 'green': 0, 'yellow': 0, 'traps': 0, 'ips': len(csv) - 1, 'date': ''}
+    summary = {'red': 0, 'green': 0, 'yellow': 0, 'traps': 0, 'ips': len(csv) - 1, 'date': ''}
 
     for i in range(len(csv) - 1):
         line = csv[i].split(',')
 
         if line[6] == 'GREEN':
-            resumo['green'] += 1
+            summary['green'] += 1
         elif line[6] == 'YELLOW':
-            resumo['yellow'] += 1
+            summary['yellow'] += 1
         else:
-            resumo['red'] += 1
+            summary['red'] += 1
 
         if line[10].isnumeric():
-            resumo['traps'] += int(line[10])
+            summary['traps'] += int(line[10])
 
-    resumo['date'] = line[2][:10]
+    summary['date'] = line[2][:10]
 
-    return resumo
+    return summary
 
 
 def search_ip_status(ip, ips_data):
@@ -103,7 +103,7 @@ def search_ip_status(ip, ips_data):
     return ip_data
 
 
-def lista(response):
+def list_blocked_ips(response):
     """Recebe a tabela de ranges bloqueados (get_ip_status) e retorna lista de todos ips."""
     # FIXME: (http.client.HTTPResponse -> list)
 
@@ -148,29 +148,29 @@ def lista(response):
     return lista
 
 
-def reverso(ips: list) -> list:
+def list_blocked_ips_rdns(ips: list) -> list:
     """Encontra o host de uma lista de endereços IP."""
 
-    rdns = []
+    data = []
 
     if not isinstance(ips, list):
         # Caso seja passado apenas um IP
         try:
             ips = str(ips)
-            reverso = socket.gethostbyaddr(ips)[0]
-            rdns.append({'ip': ips, 'rdns': reverso})
+            rdns = socket.gethostbyaddr(ips)[0]
+            data.append({'ip': ips, 'rdns': rdns})
         except socket.error as e:
-            # 'socket.gethostbyaddr' levanta exceção caso o IP não tenha reverso
-            rdns.append({'ip': ips, 'rdns': str(e)})
+            # 'socket.gethostbyaddr' levanta exceção caso o IP não tenha rdns
+            data.append({'ip': ips, 'rdns': str(e)})
 
-        return rdns
+        return data
     else:
         # Caso seja passada uma lista de IPs
         for ip in ips:
             try:
-                reverso = socket.gethostbyaddr(ip)[0]
-                rdns.append({'ip': str(ip), 'rdns': reverso})
+                rdns = socket.gethostbyaddr(ip)[0]
+                data.append({'ip': str(ip), 'rdns': rdns})
             except socket.error as e:
-                rdns.append({'ip': str(ip), 'rdns': str(e)})
+                data.append({'ip': str(ip), 'rdns': str(e)})
 
-        return rdns
+        return data

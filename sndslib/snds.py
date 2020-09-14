@@ -6,30 +6,30 @@ from argparse import ArgumentParser
 from __init__ import __version__
 
 
-def print_lista(blocked_ips):
+def print_list_blocked_ips(blocked_ips):
     print('\n'.join(blocked_ips))
 
 
-def print_reverso(rdns):
-    for ip in rdns:
+def print_list_blocked_ips_rdns(blocked_ips_rdns):
+    for ip in blocked_ips_rdns:
         print(ip['ip'] + ';' + ip['rdns'])
 
 
-def print_status(resumo, blocked_ips):
+def print_ip_status(summary, blocked_ips):
     message = (
-        f"Data: {resumo['date']:>9} \n"
-        f"IPs: {resumo['ips']:>10} \n"
-        f"Green: {resumo['green']:>8} \n"
-        f"Yellow: {resumo['yellow']:>7} \n"
-        f"Red: {resumo['red']:>10} \n"
-        f"Trap Hits: {resumo['traps']:>4} \n"
+        f"Data: {summary['date']:>9} \n"
+        f"IPs: {summary['ips']:>10} \n"
+        f"Green: {summary['green']:>8} \n"
+        f"Yellow: {summary['yellow']:>7} \n"
+        f"Red: {summary['red']:>10} \n"
+        f"Trap Hits: {summary['traps']:>4} \n"
         f"Blocked: {len(blocked_ips):>6}"
     )
 
     print(message)
 
 
-def print_ipdata(ipdata):
+def print_ip_data(ipdata):
     message = (
         f"Activity: {ipdata['activity_start']} until {ipdata['activity_end']} \n"
         f"IP: {ipdata['ip_address']:>15} \n"
@@ -88,25 +88,25 @@ def main():
 
         if not args.ip:
             rstatus = sndslib.get_ip_status(args.key)
-            blocked_ips = sndslib.lista(rstatus)
+            blocked_ips = sndslib.list_blocked_ips(rstatus)
     except AssertionError as e:
         print(e)
         return
 
     # Arguments execution chain
     if args.r:
-        rdns = sndslib.reverso(blocked_ips)
-        print_reverso(rdns)
+        rdns = sndslib.list_blocked_ips_rdns(blocked_ips)
+        print_list_blocked_ips_rdns(rdns)
     elif args.l:
-        print_lista(blocked_ips)
+        print_list_blocked_ips(blocked_ips)
 
     if args.s:
-        resumo = sndslib.resumo(rdata)
-        print_status(resumo, blocked_ips)
+        summary = sndslib.summarize(rdata)
+        print_ip_status(summary, blocked_ips)
     elif args.ip:
         ipdata = sndslib.search_ip_status(args.ip, rdata)
         if ipdata:
-            print_ipdata(ipdata)
+            print_ip_data(ipdata)
         else:
             print('IP not found')
 
