@@ -39,7 +39,6 @@ import re
 
 def get_ip_status(key):
     """Busca os ranges bloqueados no SNDS Automated Data Access."""
-    # FIXME: (str -> http.client.HTTPResponse)
 
     response = urlopen('https://sendersupport.olc.protection.outlook.com/snds/ipStatus.aspx?key={}'.format(key))
 
@@ -52,7 +51,6 @@ def get_ip_status(key):
 
 def get_data(key, date=None):
     """Busca os dados de uso dos IP no SNDS Automated Data Access."""
-    # FIXME: (str, str=None -> http.client.HTTPResponse)
 
     if date:
         response = urlopen('https://sendersupport.olc.protection.outlook.com/snds/data.aspx?key={}&date={}'.format(key, date))
@@ -67,8 +65,12 @@ def get_data(key, date=None):
 
 
 def summarize(response):
-    """Recebe a tabela com dados de uso dos IPs (get_data) e retorna um dict com o status geral."""
-    # FIXME: (http.client.HTTPResponse -> dict)
+    """Recebe a tabela com dados de uso dos IPs (sndslib.get_data) e retorna o status geral.
+
+    >>> r = sndslib.get_data('mykey')
+    >>> sndslib.summarize(r)
+    {'red': 272, 'green': 710, 'yellow': 852, 'traps': 1298, 'ips': 1834, 'date': '12/31/2019'}
+    """
 
     # Contagem de incidências do status e total de spamtraps
     summary = {'red': 0, 'green': 0, 'yellow': 0, 'traps': 0, 'ips': len(response) - 1, 'date': ''}
@@ -92,8 +94,25 @@ def summarize(response):
 
 
 def search_ip_status(ip, response):
-    """Porcura pelos status de um IP especifico nos dados de uso (response)."""
-    # FIXME: (str, http.client.HTTPResponse -> dict)
+    """Porcura pelos status de um IP especifico nos dados de uso de IP (sndslib.get_data).
+
+    >>> r = sndslib.get_data('mykey')
+    >>> sndslib.search_ip_status('3.3.3.3', r)
+    {'activity_end': '12/31/2019 7:00 PM',
+    'activity_start': '12/31/2019 10:00 AM',
+    'comments': '',
+    'complaint_rate': '< 0.1%',
+    'data_commands': '1894',
+    'filter_result': 'GREEN',
+    'ip_address': '3.3.3.3',
+    'message_recipients': '1894',
+    'rcpt_commands': '1895',
+    'sample_helo': '',
+    'sample_mailfrom': '',
+    'trap_message_end': '',
+    'trap_message_start': '',
+    'traphits': '0'}
+    """
 
     for line in response:
         if re.search(ip, line):
@@ -123,8 +142,13 @@ def search_ip_status(ip, response):
 
 
 def list_blocked_ips(response):
-    """Recebe a tabela de ranges bloqueados (get_ip_status) e retorna lista de todos ips."""
-    # FIXME: (http.client.HTTPResponse -> list)
+    """Calcula a lista de IPs bloqueados com base na lista de ranges bloqueados (sndslib.get_ip_status).
+
+    >>> sndslib.get_ip_status('mykey')
+    ['1.1.1.1,1.1.1.3,Yes,Blocked due to user complaints or other evidence of spamming']
+    >>> sndslib.list_blocked_ips(r)
+    [1.1.1.1, 1.1.1.2, 1.1.1.3]
+    """
 
     # Lista que receberá o total de IPs bloqueados
     lista = []
@@ -165,7 +189,12 @@ def list_blocked_ips(response):
 
 
 def list_blocked_ips_rdns(ips: list) -> list:
-    """Encontra o host de uma lista de endereços IP."""
+    """Busca o host de uma lista de endereços IP (sndslib.list_blocked_ips).
+
+    >>> sndslib.list_blocked_ips_rdns(['1.1.1.1', '1.1.1.2'])
+    [{'ip': '1.1.1.1', 'rdns': 'foo.bar.exemple.com'},
+     {'ip': '1.1.1.2', 'rdns': 'foo2.bar.exemple.com'}]
+    """
 
     data = []
 
