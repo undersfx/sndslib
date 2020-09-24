@@ -40,7 +40,7 @@ import re
 def get_ip_status(key):
     """Busca os ranges bloqueados no SNDS Automated Data Access."""
 
-    response = urlopen('https://sendersupport.olc.protection.outlook.com/snds/ipStatus.aspx?key={}'.format(key))
+    response = urlopen(f'https://sendersupport.olc.protection.outlook.com/snds/ipStatus.aspx?key={key}')
 
     assert response.status == 200, 'Invalid return code: {}'.format(response.status)
 
@@ -53,9 +53,9 @@ def get_data(key, date=None):
     """Busca os dados de uso dos IP no SNDS Automated Data Access."""
 
     if date:
-        response = urlopen('https://sendersupport.olc.protection.outlook.com/snds/data.aspx?key={}&date={}'.format(key, date))
+        response = urlopen(f'https://sendersupport.olc.protection.outlook.com/snds/data.aspx?key={key}&date={date}')
     else:
-        response = urlopen('https://sendersupport.olc.protection.outlook.com/snds/data.aspx?key={}'.format(key))
+        response = urlopen(f'https://sendersupport.olc.protection.outlook.com/snds/data.aspx?key={key}')
 
     assert response.status == 200, 'Invalid return code: {}'.format(response.status)
 
