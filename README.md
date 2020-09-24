@@ -1,12 +1,14 @@
 # SNDS LIB
 
-Process and erify data from Microsoft's Smart Network Data Service (SNDS) API easily.
+Process and verify data from Microsoft's Smart Network Data Service (SNDS) API easily.
 
 SNDSLIB is a wrapper around SNDS Automated Data Access API to facilitate fast data process and analysis.
+
 
 ## What is SNDS?
 
 Smart Network Data Service (SNDS) is a platform to monitor data from IPs that send emails to Microsoft's servers. If you send more than 100 messages per day from your IPs, your can get valuable information about IP reputation, possible blocks, spam complaints and spamtraps hits.
+
 
 ## Talk is cheap. Show me the code!
 
@@ -39,5 +41,33 @@ Simple example of library use:
     'trap_message_start': '',
     'traphits': '0'}
 ```
+
+
+## CLI
+
+This library contains a CLI to facilitate fast operations in the terminal.
+
+Some examples:
+
+Summary of all IPs status
+```bash
+snds -k 'your-key-here' -s
+```
+
+Individual report of a IP
+```bash
+snds -k 'your-key-here' -ip '1.1.1.1'
+```
+
+List all IPs blocked
+```bash
+snds -k 'your-key-here' -l
+```
+
+List all IPs blocked with rDNS
+```bash
+snds -k 'your-key-here' -r
+```
+
 
 More information in the [SNDS](https://sendersupport.olc.protection.outlook.com/snds/FAQ.aspx?wa=wsignin1.0) and [SNDS Automated Data Access](https://sendersupport.olc.protection.outlook.com/snds/auto.aspx) pages.
