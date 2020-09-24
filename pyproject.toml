@@ -2,7 +2,7 @@
 name = "sndslib"
 version = "0.1.0"
 description = "Process and verify data from SNDS easily"
-authors = ["undersfx <atchin_@hotmail.com>"]
+authors = ["undersfx <undersoft.corp@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.7"

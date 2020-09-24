@@ -6,10 +6,30 @@ Facilita a administração dos IPs listados no painel Sender Network Data Servic
 
 Exemplo de Uso:
 
-    >>>import sndslib
-    >>>r = sndslib.get_ip_status('mykey')
-    >>>ips = sndslib.lista(r)
-    >>>print('\n'.join(ips))
+    >>> import sndslib
+    >>> r = sndslib.get_ip_status('mykey')
+    >>> blocked_ips = sndslib.list_blocked_ips(r)
+    [1.1.1.1, 2.2.2.2, 3.3.3.3]
+
+    >>> r = sndslib.get_data('mykey')
+    >>> sndslib.summarize(r)
+    {'red': 272, 'green': 710, 'yellow': 852, 'traps': 1298, 'ips': 1834, 'date': '12/31/2019'}
+
+    >>> sndslib.search_ip_status('3.3.3.3', r)
+    {'activity_end': '12/31/2019 7:00 PM',
+    'activity_start': '12/31/2019 10:00 AM',
+    'comments': '',
+    'complaint_rate': '< 0.1%',
+    'data_commands': '1894',
+    'filter_result': 'GREEN',
+    'ip_address': '3.3.3.3',
+    'message_recipients': '1894',
+    'rcpt_commands': '1895',
+    'sample_helo': '',
+    'sample_mailfrom': '',
+    'trap_message_end': '',
+    'trap_message_start': '',
+    'traphits': '0'}
 """
 
 from urllib.request import urlopen
@@ -21,11 +41,13 @@ def get_ip_status(key):
     """Busca os ranges bloqueados no SNDS Automated Data Access."""
     # FIXME: (str -> http.client.HTTPResponse)
 
-    r = urlopen('https://sendersupport.olc.protection.outlook.com/snds/ipStatus.aspx?key={}'.format(key))
+    response = urlopen('https://sendersupport.olc.protection.outlook.com/snds/ipStatus.aspx?key={}'.format(key))
 
-    assert r.status == 200, 'Invalid return code: {}'.format(r.status)
+    assert response.status == 200, 'Invalid return code: {}'.format(response.status)
 
-    return r
+    csv = list(response.read().decode('utf-8').split('\r\n'))
+
+    return csv
 
 
 def get_data(key, date=None):
@@ -33,27 +55,26 @@ def get_data(key, date=None):
     # FIXME: (str, str=None -> http.client.HTTPResponse)
 
     if date:
-        r = urlopen('https://sendersupport.olc.protection.outlook.com/snds/data.aspx?key={}&date={}'.format(key, date))
+        response = urlopen('https://sendersupport.olc.protection.outlook.com/snds/data.aspx?key={}&date={}'.format(key, date))
     else:
-        r = urlopen('https://sendersupport.olc.protection.outlook.com/snds/data.aspx?key={}'.format(key))
+        response = urlopen('https://sendersupport.olc.protection.outlook.com/snds/data.aspx?key={}'.format(key))
 
-    assert r.status == 200, 'Invalid return code: {}'.format(r.status)
+    assert response.status == 200, 'Invalid return code: {}'.format(response.status)
 
-    return r
+    csv = list(response.read().decode('utf-8').split('\r\n'))
+
+    return csv
 
 
 def summarize(response):
     """Recebe a tabela com dados de uso dos IPs (get_data) e retorna um dict com o status geral."""
     # FIXME: (http.client.HTTPResponse -> dict)
 
-    # Transforma os dados do get em uma lista
-    csv = list(response.read().decode('utf-8').split('\r\n'))
-
     # Contagem de incidências do status e total de spamtraps
-    summary = {'red': 0, 'green': 0, 'yellow': 0, 'traps': 0, 'ips': len(csv) - 1, 'date': ''}
+    summary = {'red': 0, 'green': 0, 'yellow': 0, 'traps': 0, 'ips': len(response) - 1, 'date': ''}
 
-    for i in range(len(csv) - 1):
-        line = csv[i].split(',')
+    for i in range(len(response) - 1):
+        line = response[i].split(',')
 
         if line[6] == 'GREEN':
             summary['green'] += 1
@@ -70,13 +91,11 @@ def summarize(response):
     return summary
 
 
-def search_ip_status(ip, ips_data):
-    """Porcura pelos status de um IP especifico nos dados de uso (ips_data)."""
+def search_ip_status(ip, response):
+    """Porcura pelos status de um IP especifico nos dados de uso (response)."""
     # FIXME: (str, http.client.HTTPResponse -> dict)
 
-    csv = list(ips_data.read().decode('utf-8').split('\r\n'))
-
-    for line in csv:
+    for line in response:
         if re.search(ip, line):
             line = line.split(',')
             break
@@ -110,16 +129,13 @@ def list_blocked_ips(response):
     # Lista que receberá o total de IPs bloqueados
     lista = []
 
-    # Transforma os dados do get em uma lista
-    csv = list(response.read().decode('utf-8').split('\r\n'))
-
     rangestart = []
     rangeend = []
 
     # Calcula a diferença entre IP de inicio fim do range bloqueado
-    for x in range(len(csv) - 1):
-        rangestart.append(csv[x].split(',')[0])
-        rangeend.append(csv[x].split(',')[1])
+    for x in range(len(response) - 1):
+        rangestart.append(response[x].split(',')[0])
+        rangeend.append(response[x].split(',')[1])
 
         # Adiciona primeiro IP a lista de bloqueado a lista
         lista.append(rangestart[x])
