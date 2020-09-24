@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# snds command by @undersfx
+# snds cli by @undersfx
 
 import sndslib
 from argparse import ArgumentParser

@@ -6,7 +6,7 @@ Facilita a administração dos IPs listados no painel Sender Network Data Servic
 
 Exemplo de Uso:
 
-    >>> import sndslib
+    >>> from sndslib import sndslib
     >>> r = sndslib.get_ip_status('mykey')
     >>> blocked_ips = sndslib.list_blocked_ips(r)
     [1.1.1.1, 2.2.2.2, 3.3.3.3]
