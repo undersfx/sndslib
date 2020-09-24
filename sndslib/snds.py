@@ -81,10 +81,11 @@ def main():
 
     # Conection with SNDS
     try:
-        if args.data:
-            rdata = sndslib.get_data(args.key, args.data)
-        else:
-            rdata = sndslib.get_data(args.key)
+        if args.s or args.ip:
+            if args.data:
+                rdata = sndslib.get_data(args.key, args.data)
+            else:
+                rdata = sndslib.get_data(args.key)
 
         if not args.ip:
             rstatus = sndslib.get_ip_status(args.key)
