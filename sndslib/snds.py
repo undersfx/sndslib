@@ -3,7 +3,7 @@
 
 import sndslib
 from argparse import ArgumentParser
-from __init__ import __version__
+from __version__ import __version__
 
 
 def print_list_blocked_ips(blocked_ips):
@@ -50,7 +50,7 @@ parser = ArgumentParser(prog='snds',
                             (e.g. "snds -s @parameters.txt")',
                         fromfile_prefix_chars='@')
 
-parser.add_argument('-V', '--version', action='version', version=f'sndslib version {__version__}',
+parser.add_argument('-V', '--version', action='version', version=f'sndslib {__version__}',
                     help='returns the version of sndslib')
 
 parser.add_argument('-k', action='store', dest='key',
