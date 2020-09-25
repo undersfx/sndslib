@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # snds cli by @undersfx
 
-import sndslib
+from __future__ import absolute_import
+from sndslib import sndslib
 from argparse import ArgumentParser
-from __version__ import __version__
+from .__version__ import __version__
 
 
 def print_list_blocked_ips(blocked_ips):
