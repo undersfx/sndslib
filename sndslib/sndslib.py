@@ -46,6 +46,8 @@ def get_ip_status(key):
 
     csv = list(response.read().decode('utf-8').split('\r\n'))
 
+    csv = list(filter(None, csv))
+
     return csv
 
 
@@ -60,6 +62,8 @@ def get_data(key, date=None):
     assert response.status == 200, 'Invalid return code: {}'.format(response.status)
 
     csv = list(response.read().decode('utf-8').split('\r\n'))
+
+    csv = list(filter(None, csv))
 
     return csv
 
