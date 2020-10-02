@@ -33,6 +33,7 @@ Exemplo de Uso:
 """
 
 from urllib.request import urlopen
+from datetime import datetime
 import socket
 import re
 
@@ -91,7 +92,8 @@ def summarize(response):
 
         summary['traps'] += int(status['traphits'])
     else:
-        summary['date'] = status['activity_end']
+        data = datetime.strptime(status['activity_end'], '%m/%d/%Y %I:%M %p')
+        summary['date'] = data.strftime('%m/%d/%Y')
 
     return summary
 
