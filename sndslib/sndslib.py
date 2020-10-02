@@ -77,22 +77,21 @@ def summarize(response):
     """
 
     # Contagem de incidências do status e total de spamtraps
-    summary = {'red': 0, 'green': 0, 'yellow': 0, 'traps': 0, 'ips': len(response) - 1, 'date': ''}
+    summary = {'red': 0, 'green': 0, 'yellow': 0, 'traps': 0, 'ips': len(response), 'date': ''}
 
-    for i in range(len(response) - 1):
-        line = response[i].split(',')
+    for ip_status in response:
+        status = format_ip_data(ip_status.split(','))
 
-        if line[6] == 'GREEN':
+        if status['filter_result'] == 'GREEN':
             summary['green'] += 1
-        elif line[6] == 'YELLOW':
+        elif status['filter_result'] == 'YELLOW':
             summary['yellow'] += 1
         else:
             summary['red'] += 1
 
-        if line[10].isnumeric():
-            summary['traps'] += int(line[10])
-
-    summary['date'] = line[2][:10]
+        summary['traps'] += int(status['traphits'])
+    else:
+        summary['date'] = status['activity_end']
 
     return summary
 
@@ -125,21 +124,27 @@ def search_ip_status(ip, response):
     else:
         return False
 
+    ip_data = format_ip_data(line)
+
+    return ip_data
+
+
+def format_ip_data(ip_status):
     ip_data = {
-        'ip_address': line[0],
-        'activity_start': line[1],
-        'activity_end': line[2],
-        'rcpt_commands': line[3],
-        'data_commands': line[4],
-        'message_recipients': line[5],
-        'filter_result': line[6],
-        'complaint_rate': line[7],
-        'trap_message_start': line[8],
-        'trap_message_end': line[9],
-        'traphits': line[10],
-        'sample_helo': line[11],
-        'sample_mailfrom': line[11],
-        'comments': line[12],
+        'ip_address': ip_status[0],
+        'activity_start': ip_status[1],
+        'activity_end': ip_status[2],
+        'rcpt_commands': ip_status[3],
+        'data_commands': ip_status[4],
+        'message_recipients': ip_status[5],
+        'filter_result': ip_status[6],
+        'complaint_rate': ip_status[7],
+        'trap_message_start': ip_status[8],
+        'trap_message_end': ip_status[9],
+        'traphits': ip_status[10],
+        'sample_helo': ip_status[11],
+        'sample_mailfrom': ip_status[11],
+        'comments': ip_status[12],
     }
 
     return ip_data

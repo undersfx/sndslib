@@ -18,7 +18,7 @@ def print_list_blocked_ips_rdns(blocked_ips_rdns):
 
 def print_ip_status(summary, blocked_ips):
     message = (
-        f"Data: {summary['date']:>9} \n"
+        f"Date: {summary['date']:>9} \n"
         f"IPs: {summary['ips']:>10} \n"
         f"Green: {summary['green']:>8} \n"
         f"Yellow: {summary['yellow']:>7} \n"
