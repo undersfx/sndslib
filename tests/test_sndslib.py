@@ -64,15 +64,18 @@ def test_summarize_return_dict(get_data_mock):
     summary = sndslib.summarize(resp)
     assert isinstance(summary, dict)
 
+
 def test_summarize_green_count(get_data_mock):
     resp = sndslib.get_data('test')
     summary = sndslib.summarize(resp)
     assert summary['green'] == 1
 
+
 def test_summarize_yellow_count(get_data_mock):
     resp = sndslib.get_data('test')
     summary = sndslib.summarize(resp)
     assert summary['yellow'] == 1
+
 
 def test_summarize_red_count(get_data_mock):
     resp = sndslib.get_data('test')
