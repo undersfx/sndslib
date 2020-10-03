@@ -2,3 +2,4 @@ schedule: every month
 update: insecure
 requirements:
  - pyproject.toml
+ - poetry.lock
