@@ -92,8 +92,9 @@ def summarize(response):
 
         summary['traps'] += int(status['traphits'])
     else:
-        data = datetime.strptime(status['activity_end'], '%m/%d/%Y %I:%M %p')
-        summary['date'] = data.strftime('%m/%d/%Y')
+        if response:
+            data = datetime.strptime(status['activity_end'], '%m/%d/%Y %I:%M %p')
+            summary['date'] = data.strftime('%m/%d/%Y')
 
     return summary
 
