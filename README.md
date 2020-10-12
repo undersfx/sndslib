@@ -14,7 +14,15 @@ Smart Network Data Service (SNDS) is a platform to monitor data from IPs that se
 
 ## Talk is cheap. Show me the code!
 
-Simple example of library use:
+Installation:
+
+SNDSLIB has no external dependancies. It runs just with python 3.6 or more.
+
+```bash
+pip install sndslib
+```
+
+Simple example of library usage:
 
 ```python
     >>> from sndslib import sndslib
