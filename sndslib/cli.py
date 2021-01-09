@@ -7,42 +7,6 @@ from argparse import ArgumentParser
 from .__version__ import __version__
 
 
-def print_list_blocked_ips(blocked_ips):
-    print('\n'.join(blocked_ips))
-
-
-def print_list_blocked_ips_rdns(blocked_ips_rdns):
-    for ip in blocked_ips_rdns:
-        print(ip['ip'] + ';' + ip['rdns'])
-
-
-def print_ip_status(summary, blocked_ips):
-    message = (
-        f"Date: {summary['date']:>9} \n"
-        f"IPs: {summary['ips']:>10} \n"
-        f"Green: {summary['green']:>8} \n"
-        f"Yellow: {summary['yellow']:>7} \n"
-        f"Red: {summary['red']:>10} \n"
-        f"Trap Hits: {summary['traps']:>4} \n"
-        f"Blocked: {len(blocked_ips):>6}"
-    )
-
-    print(message)
-
-
-def print_ip_data(ipdata):
-    message = (
-        f"Activity: {ipdata['activity_start']} until {ipdata['activity_end']} \n"
-        f"IP: {ipdata['ip_address']:>15} \n"
-        f"Messages: {ipdata['message_recipients']:>9} \n"
-        f"Filter: {ipdata['filter_result']:>11} \n"
-        f"Complaint: {ipdata['complaint_rate']:>8} \n"
-        f"Trap Hits: {ipdata['traphits']:>8} \n"
-    )
-
-    print(message)
-
-
 # Argument's instructions
 parser = ArgumentParser(prog='snds',
                         description='Searches and formats the SNDS \
@@ -78,6 +42,38 @@ group1.add_argument('-r', action='store_true',
 
 # Parse and execution of the arguments
 def main():
+    def format_list_blocked_ips(blocked_ips):
+        print('\n'.join(blocked_ips))
+
+    def format_list_blocked_ips_rdns(blocked_ips_rdns):
+        for ip in blocked_ips_rdns:
+            print(ip['ip'] + ';' + ip['rdns'])
+
+    def format_ip_status(summary, blocked_ips):
+        message = (
+            f"Date: {summary['date']:>9} \n"
+            f"IPs: {summary['ips']:>10} \n"
+            f"Green: {summary['green']:>8} \n"
+            f"Yellow: {summary['yellow']:>7} \n"
+            f"Red: {summary['red']:>10} \n"
+            f"Trap Hits: {summary['traps']:>4} \n"
+            f"Blocked: {len(blocked_ips):>6}"
+        )
+
+        print(message)
+
+    def format_ip_data(ipdata):
+        message = (
+            f"Activity: {ipdata['activity_start']} until {ipdata['activity_end']} \n"
+            f"IP: {ipdata['ip_address']:>15} \n"
+            f"Messages: {ipdata['message_recipients']:>9} \n"
+            f"Filter: {ipdata['filter_result']:>11} \n"
+            f"Complaint: {ipdata['complaint_rate']:>8} \n"
+            f"Trap Hits: {ipdata['traphits']:>8} \n"
+        )
+
+        print(message)
+
     args = parser.parse_args()
 
     # Conection with SNDS
@@ -98,17 +94,17 @@ def main():
     # Arguments execution chain
     if args.r:
         rdns = sndslib.list_blocked_ips_rdns(blocked_ips)
-        print_list_blocked_ips_rdns(rdns)
+        format_list_blocked_ips_rdns(rdns)
     elif args.l:
-        print_list_blocked_ips(blocked_ips)
+        format_list_blocked_ips(blocked_ips)
 
     if args.s:
         summary = sndslib.summarize(rdata)
-        print_ip_status(summary, blocked_ips)
+        format_ip_status(summary, blocked_ips)
     elif args.ip:
         ipdata = sndslib.search_ip_status(args.ip, rdata)
         if ipdata:
-            print_ip_data(ipdata)
+            format_ip_data(ipdata)
         else:
             print('IP not found')
 
