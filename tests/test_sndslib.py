@@ -43,8 +43,18 @@ def test_get_data_is_list(get_data_mock):
     assert isinstance(resp, list)
 
 
+def test_get_data_with_date_is_list(get_data_mock):
+    resp = sndslib.get_data('test', '290920')
+    assert isinstance(resp, list)
+
+
 def test_get_data_have_ips(get_data_mock):
     resp = sndslib.get_data('test')
+    assert '1.1.1.0' in resp[0]
+
+
+def test_get_data__with_date_have_ips(get_data_mock):
+    resp = sndslib.get_data('test', '290920')
     assert '1.1.1.0' in resp[0]
 
 
@@ -54,8 +64,19 @@ def test_get_data_first_value(get_data_mock):
     assert first_line_value == resp[0]
 
 
+def test_get_data__with_date_first_value(get_data_mock):
+    resp = sndslib.get_data('test', '290920')
+    first_line_value = '1.1.1.0,12/31/2019 8:00 AM,9/29/2020 9:00 PM,14129,14129,13025,GREEN,< 0.1%,9/29/2020 8:07 AM,9/29/2020 12:03 PM,41,,,'  # noqa
+    assert first_line_value == resp[0]
+
+
 def test_get_data_len(get_data_mock):
     resp = sndslib.get_data('test')
+    assert len(resp) == 3
+
+
+def test_get_data_with_date_len(get_data_mock):
+    resp = sndslib.get_data('test', '290920')
     assert len(resp) == 3
 
 
@@ -81,3 +102,30 @@ def test_summarize_red_count(get_data_mock):
     resp = sndslib.get_data('test')
     summary = sndslib.summarize(resp)
     assert summary['red'] == 1
+
+
+def test_search_ip_status_return_success(get_data_mock):
+    resp = sndslib.get_data('test')
+    resp_dict = sndslib.search_ip_status('1.1.1.0', resp)
+    expected_return = {
+        'ip_address': '1.1.1.0',
+        'activity_start': '12/31/2019 8:00 AM',
+        'activity_end': '9/29/2020 9:00 PM',
+        'rcpt_commands': '14129',
+        'data_commands': '14129',
+        'message_recipients': '13025',
+        'filter_result': 'GREEN',
+        'complaint_rate': '< 0.1%',
+        'trap_message_start': '9/29/2020 8:07 AM',
+        'trap_message_end': '9/29/2020 12:03 PM',
+        'traphits': '41', 'sample_helo': '',
+        'sample_mailfrom': '',
+        'comments': ''
+        }
+    assert resp_dict == expected_return
+
+
+def test_search_ip_status_return_failure(get_data_mock):
+    resp = sndslib.get_data('test')
+    resp_dict = sndslib.search_ip_status('0.0.0.0', resp)
+    assert resp_dict == False
