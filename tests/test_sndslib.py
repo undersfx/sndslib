@@ -128,4 +128,10 @@ def test_search_ip_status_return_success(get_data_mock):
 def test_search_ip_status_return_failure(get_data_mock):
     resp = sndslib.get_data('test')
     resp_dict = sndslib.search_ip_status('0.0.0.0', resp)
-    assert resp_dict == False
+    assert bool(resp_dict) == False
+
+
+def test_search_ip_status_return_failure_type(get_data_mock):
+    resp = sndslib.get_data('test')
+    resp_dict = sndslib.search_ip_status('0.0.0.0', resp)
+    assert isinstance(resp_dict, dict)

@@ -125,7 +125,7 @@ def search_ip_status(ip, response):
             line = line.split(',')
             break
     else:
-        return False
+        return {}
 
     ip_data = format_ip_data(line)
 
