@@ -128,7 +128,7 @@ def test_search_ip_status_return_success(get_data_mock):
 def test_search_ip_status_return_failure(get_data_mock):
     resp = sndslib.get_data('test')
     resp_dict = sndslib.search_ip_status('0.0.0.0', resp)
-    assert bool(resp_dict) == False
+    assert bool(resp_dict) is False
 
 
 def test_search_ip_status_return_failure_type(get_data_mock):
@@ -145,5 +145,21 @@ def test_list_blocked_ips_success_type(get_ip_status_mock):
 
 def test_list_blocked_ips_success_value(get_ip_status_mock):
     resp = sndslib.get_ip_status('test')
-    resp_list = sndslib.list_blocked_ips(resp)
-    assert resp_list == ['1.1.1.0', '1.1.1.1', '1.1.1.2', '1.1.1.3', '1.1.1.4', '1.1.1.5']
+    blocked_ips = sndslib.list_blocked_ips(resp)
+    assert blocked_ips == ['1.1.1.0', '1.1.1.1', '1.1.1.3', '1.1.1.254', '1.1.1.255', '1.1.2.0', '1.1.2.1']
+
+
+def test_list_blocked_ips_rdns_success(get_ip_status_mock, socket_mock):
+    resp = sndslib.get_ip_status('test')
+    blocked_ips = sndslib.list_blocked_ips(resp)
+    rdns_return = sndslib.list_blocked_ips_rdns(blocked_ips)
+    expected_return = [
+        {'ip': '1.1.1.0', 'rdns': 'rnds.mock.com'},
+        {'ip': '1.1.1.1', 'rdns': 'rnds.mock.com'},
+        {'ip': '1.1.1.3', 'rdns': 'rnds.mock.com'},
+        {'ip': '1.1.1.254', 'rdns': 'rnds.mock.com'},
+        {'ip': '1.1.1.255', 'rdns': 'rnds.mock.com'},
+        {'ip': '1.1.2.0', 'rdns': 'rnds.mock.com'},
+        {'ip': '1.1.2.1', 'rdns': 'rnds.mock.com'}
+        ]
+    assert rdns_return == expected_return
