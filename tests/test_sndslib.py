@@ -135,3 +135,15 @@ def test_search_ip_status_return_failure_type(get_data_mock):
     resp = sndslib.get_data('test')
     resp_dict = sndslib.search_ip_status('0.0.0.0', resp)
     assert isinstance(resp_dict, dict)
+
+
+def test_list_blocked_ips_success_type(get_ip_status_mock):
+    resp = sndslib.get_ip_status('test')
+    resp_list = sndslib.list_blocked_ips(resp)
+    assert isinstance(resp_list, list)
+
+
+def test_list_blocked_ips_success_value(get_ip_status_mock):
+    resp = sndslib.get_ip_status('test')
+    resp_list = sndslib.list_blocked_ips(resp)
+    assert resp_list == ['1.1.1.0', '1.1.1.1', '1.1.1.2', '1.1.1.3', '1.1.1.4', '1.1.1.5']
