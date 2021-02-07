@@ -204,21 +204,25 @@ def list_blocked_ips_rdns(ips: list) -> list:
     """Busca o host de uma lista de endereços IP (sndslib.list_blocked_ips).
 
     >>> sndslib.list_blocked_ips_rdns(['1.1.1.1', '1.1.1.2'])
-    [{'ip': '1.1.1.1', 'rdns': 'foo.bar.exemple.com'},
-     {'ip': '1.1.1.2', 'rdns': 'foo2.bar.exemple.com'}]
+    [{'ip': '1.1.1.1', 'rdns': 'foo.bar.exemple.com'}, {'ip': '1.1.1.2', 'rdns': 'foo2.bar.exemple.com'}]
+
+    No caso do IP não tem um rDNS válido ou retornar erro na pesquisa, o retorno será 'NXDOMAIN'
+    >>> sndslib.list_blocked_ips_rdns(['0.0.0.1'])
+    [{'ip': '0.0.0.1', 'rdns': 'NXDOMAIN'}]
     """
 
     data = []
 
     if not isinstance(ips, list):
         # Caso seja passado apenas um IP
+        ip = str(ips)
         try:
-            ips = str(ips)
-            rdns = socket.gethostbyaddr(ips)[0]
-            data.append({'ip': ips, 'rdns': rdns})
-        except socket.error as e:
+            rdns = socket.gethostbyaddr(ip)[0]
+        except socket.error:
             # 'socket.gethostbyaddr' levanta exceção caso o IP não tenha rdns
-            data.append({'ip': ips, 'rdns': str(e)})
+            rdns = 'NXDOMAIN'
+
+        data.append({'ip': ip, 'rdns': rdns})
 
         return data
     else:
@@ -226,8 +230,9 @@ def list_blocked_ips_rdns(ips: list) -> list:
         for ip in ips:
             try:
                 rdns = socket.gethostbyaddr(ip)[0]
-                data.append({'ip': str(ip), 'rdns': rdns})
-            except socket.error as e:
-                data.append({'ip': str(ip), 'rdns': str(e)})
+            except socket.error:
+                rdns = 'NXDOMAIN'
+
+            data.append({'ip': str(ip), 'rdns': rdns})
 
         return data
