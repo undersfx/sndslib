@@ -169,7 +169,7 @@ def list_blocked_ips(response):
     rangeend = []
 
     # Calcula a diferença entre IP de inicio fim do range bloqueado
-    for x in range(len(response) - 1):
+    for x in range(len(response)):
         rangestart.append(response[x].split(',')[0])
         rangeend.append(response[x].split(',')[1])
 
