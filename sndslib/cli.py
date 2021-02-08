@@ -8,12 +8,7 @@ from .__version__ import __version__
 
 
 # Argument's instructions
-parser = ArgumentParser(prog='snds',
-                        description='Searches and formats the SNDS \
-                            dashboard data',
-                        epilog='You can also use a configuration file using @ \
-                            (e.g. "snds -s @parameters.txt")',
-                        fromfile_prefix_chars='@')
+parser = ArgumentParser(prog='snds', description='Searches and formats the SNDS dashboard data')
 
 parser.add_argument('-V', '--version', action='version', version=f'sndslib {__version__}',
                     help='returns the version of sndslib')
@@ -40,40 +35,44 @@ group1.add_argument('-r', action='store_true',
                     help='returns the blocked IPs list with reverses')
 
 
+def format_list_blocked_ips(blocked_ips):
+    print('\n'.join(blocked_ips))
+
+
+def format_list_blocked_ips_rdns(blocked_ips_rdns):
+    for ip in blocked_ips_rdns:
+        print(ip['ip'] + ';' + ip['rdns'])
+
+
+def format_ip_status(summary, blocked_ips):
+    message = (
+        f"Date: {summary['date']:>9} \n"
+        f"IPs: {summary['ips']:>10} \n"
+        f"Green: {summary['green']:>8} \n"
+        f"Yellow: {summary['yellow']:>7} \n"
+        f"Red: {summary['red']:>10} \n"
+        f"Trap Hits: {summary['traps']:>4} \n"
+        f"Blocked: {len(blocked_ips):>6}"
+    )
+    print(message)
+
+
+def format_ip_data(ipdata):
+    message = (
+        f"Activity: {ipdata['activity_start']} until {ipdata['activity_end']} \n"
+        f"IP: {ipdata['ip_address']:>15} \n"
+        f"Messages: {ipdata['message_recipients']:>9} \n"
+        f"Filter: {ipdata['filter_result']:>11} \n"
+        f"Complaint: {ipdata['complaint_rate']:>8} \n"
+        f"Trap Hits: {ipdata['traphits']:>8} \n"
+    )
+    print(message)
+
+
 # Parse and execution of the arguments
 def main():
-    def format_list_blocked_ips(blocked_ips):
-        print('\n'.join(blocked_ips))
-
-    def format_list_blocked_ips_rdns(blocked_ips_rdns):
-        for ip in blocked_ips_rdns:
-            print(ip['ip'] + ';' + ip['rdns'])
-
-    def format_ip_status(summary, blocked_ips):
-        message = (
-            f"Date: {summary['date']:>9} \n"
-            f"IPs: {summary['ips']:>10} \n"
-            f"Green: {summary['green']:>8} \n"
-            f"Yellow: {summary['yellow']:>7} \n"
-            f"Red: {summary['red']:>10} \n"
-            f"Trap Hits: {summary['traps']:>4} \n"
-            f"Blocked: {len(blocked_ips):>6}"
-        )
-
-        print(message)
-
-    def format_ip_data(ipdata):
-        message = (
-            f"Activity: {ipdata['activity_start']} until {ipdata['activity_end']} \n"
-            f"IP: {ipdata['ip_address']:>15} \n"
-            f"Messages: {ipdata['message_recipients']:>9} \n"
-            f"Filter: {ipdata['filter_result']:>11} \n"
-            f"Complaint: {ipdata['complaint_rate']:>8} \n"
-            f"Trap Hits: {ipdata['traphits']:>8} \n"
-        )
-
-        print(message)
-
+    blocked_ips = None
+    rdata = None
     args = parser.parse_args()
 
     # Conection with SNDS
