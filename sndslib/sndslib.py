@@ -164,38 +164,32 @@ def list_blocked_ips(response):
 
     # Lista que receberá o total de IPs bloqueados
     lista = []
-
-    rangestart = []
-    rangeend = []
-
     # Calcula a diferença entre IP de inicio fim do range bloqueado
-    for x in range(len(response)):
-        rangestart.append(response[x].split(',')[0])
-        rangeend.append(response[x].split(',')[1])
+    for value in response:
+        inicial = value.split(',')[0]
+        final = value.split(',')[1]
 
-        # Adiciona primeiro IP a lista de bloqueado a lista
-        lista.append(rangestart[x])
+        octetos_ip_inicial = inicial.split('.')
+        octetos_ip_final = final.split('.')
 
-        # Quebra os octetos do IP para calcular a diferenca entre IP inicial e final
-        inicial = rangestart[x].split('.')
-        final = rangeend[x].split('.')
+        lista.append(inicial)
 
-        # Calcula o próximo IP bloqueado se existir mais de um no range (inicial != final)
-        while inicial != final:
-            if int(inicial[3]) < 255:
-                inicial[3] = str(int(inicial[3]) + 1)
-            elif int(inicial[2]) < 255:
-                inicial[2] = str(int(inicial[2]) + 1)
-                inicial[3] = '0'
-            elif int(inicial[1]) < 255:
-                inicial[1] = str(int(inicial[1]) + 1)
-                inicial[2] = inicial[3] = '0'
-            elif int(inicial[1]) <= 255:
-                inicial[0] = str(int(inicial[0]) + 1)
-                inicial[1] = inicial[2] = inicial[3] = '0'
+        # Calcula o próximo IP bloqueado se existir mais de um no range
+        while octetos_ip_inicial != octetos_ip_final:
+            if int(octetos_ip_inicial[3]) < 255:
+                octetos_ip_inicial[3] = str(int(octetos_ip_inicial[3]) + 1)
+            elif int(octetos_ip_inicial[2]) < 255:
+                octetos_ip_inicial[2] = str(int(octetos_ip_inicial[2]) + 1)
+                octetos_ip_inicial[3] = '0'
+            elif int(octetos_ip_inicial[1]) < 255:
+                octetos_ip_inicial[1] = str(int(octetos_ip_inicial[1]) + 1)
+                octetos_ip_inicial[2] = octetos_ip_inicial[3] = '0'
+            elif int(octetos_ip_inicial[1]) <= 255:
+                octetos_ip_inicial[0] = str(int(octetos_ip_inicial[0]) + 1)
+                octetos_ip_inicial[1] = octetos_ip_inicial[2] = octetos_ip_inicial[3] = '0'
 
             # Adiciona IP atualizado a lista
-            lista.append('.'.join(inicial))
+            lista.append('.'.join(octetos_ip_inicial))
 
     return lista
 
