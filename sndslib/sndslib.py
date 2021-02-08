@@ -190,7 +190,7 @@ def list_blocked_ips(response):
             elif int(inicial[1]) < 255:
                 inicial[1] = str(int(inicial[1]) + 1)
                 inicial[2] = inicial[3] = '0'
-            elif int(inicial[1]) < 255:
+            elif int(inicial[1]) <= 255:
                 inicial[0] = str(int(inicial[0]) + 1)
                 inicial[1] = inicial[2] = inicial[3] = '0'
 
