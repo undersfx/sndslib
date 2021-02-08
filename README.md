@@ -33,20 +33,25 @@ Simple example of library usage:
 
     >>> r = sndslib.get_ip_status('mykey')
     >>> blocked_ips = sndslib.list_blocked_ips(r)
-    [1.1.1.1, 2.2.2.2, 3.3.3.3]
+    >>> print(blocked_ips)
+    ['1.1.1.1', '1.1.1.2']
+
+    >>> list_blocked_ips_rdns(blocked_ips)
+    [{'ip': '1.1.1.1', 'rdns': 'foo.bar.exemple.com'},
+     {'ip': '1.1.1.2', 'rdns': 'foo2.bar.exemple.com'}]
 
     >>> r = sndslib.get_data('mykey')
     >>> sndslib.summarize(r)
     {'red': 272, 'green': 710, 'yellow': 852, 'traps': 1298, 'ips': 1834, 'date': '12/31/2019'}
 
-    >>> sndslib.search_ip_status('3.3.3.3', r)
+    >>> sndslib.search_ip_status('1.1.1.1', r)
     {'activity_end': '12/31/2019 7:00 PM',
     'activity_start': '12/31/2019 10:00 AM',
     'comments': '',
     'complaint_rate': '< 0.1%',
     'data_commands': '1894',
     'filter_result': 'GREEN',
-    'ip_address': '3.3.3.3',
+    'ip_address': '1.1.1.1',
     'message_recipients': '1894',
     'rcpt_commands': '1895',
     'sample_helo': '',
