@@ -34,6 +34,7 @@ Exemplo de Uso:
 
 from urllib.request import urlopen
 from datetime import datetime
+import ipaddress
 import socket
 import re
 
@@ -161,35 +162,19 @@ def list_blocked_ips(response):
     >>> sndslib.list_blocked_ips(r)
     [1.1.1.1, 1.1.1.2, 1.1.1.3]
     """
-
     # Lista que receberá o total de IPs bloqueados
     lista = []
     # Calcula a diferença entre IP de inicio fim do range bloqueado
     for value in response:
-        inicial = value.split(',')[0]
-        final = value.split(',')[1]
+        inicial = ipaddress.IPv4Address(value.split(',')[0])
+        final = ipaddress.IPv4Address(value.split(',')[1])
 
-        octetos_ip_inicial = inicial.split('.')
-        octetos_ip_final = final.split('.')
-
-        lista.append(inicial)
-
+        lista.append(str(inicial))
         # Calcula o próximo IP bloqueado se existir mais de um no range
-        while octetos_ip_inicial != octetos_ip_final:
-            if int(octetos_ip_inicial[3]) < 255:
-                octetos_ip_inicial[3] = str(int(octetos_ip_inicial[3]) + 1)
-            elif int(octetos_ip_inicial[2]) < 255:
-                octetos_ip_inicial[2] = str(int(octetos_ip_inicial[2]) + 1)
-                octetos_ip_inicial[3] = '0'
-            elif int(octetos_ip_inicial[1]) < 255:
-                octetos_ip_inicial[1] = str(int(octetos_ip_inicial[1]) + 1)
-                octetos_ip_inicial[2] = octetos_ip_inicial[3] = '0'
-            elif int(octetos_ip_inicial[1]) <= 255:
-                octetos_ip_inicial[0] = str(int(octetos_ip_inicial[0]) + 1)
-                octetos_ip_inicial[1] = octetos_ip_inicial[2] = octetos_ip_inicial[3] = '0'
-
+        while inicial != final:
+            inicial += 1
             # Adiciona IP atualizado a lista
-            lista.append('.'.join(octetos_ip_inicial))
+            lista.append(str(inicial))
 
     return lista
 
