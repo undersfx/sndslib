@@ -44,3 +44,11 @@ def test_format_ip_status_blocked_ips_mock(capsys, blocked_ips_mock):
     cli.format_ip_status(summary, blocked_ips_mock)
     captured = capsys.readouterr()
     assert 'Blocked:     11' in captured.out
+
+
+def test_format_ip_data(capsys, get_data_mock):
+    rdata = sndslib.get_data('test')
+    ipdata = sndslib.search_ip_status('1.1.1.2', rdata)
+    cli.format_ip_data(ipdata)
+    captured = capsys.readouterr()
+    assert 'IP:         1.1.1.2' in captured.out
