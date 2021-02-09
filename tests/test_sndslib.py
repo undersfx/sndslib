@@ -182,7 +182,7 @@ def test_list_blocked_ips_rdns_success(get_ip_status_mock, socket_mock):
     assert rdns_return == expected_return
 
 
-def test_list_blocked_ips_rdns_failure(get_ip_status_mock):
+def test_list_blocked_ips_rdns_failure(get_ip_status_mock, socket_error_mock):
     rdns_return = sndslib.list_blocked_ips_rdns(['0.0.0.1', '0.0.0.1'])
     expected_return = [
         {'ip': '0.0.0.1', 'rdns': 'NXDOMAIN'},
@@ -197,7 +197,7 @@ def test_list_blocked_ips_rdns_success_single_ip(get_ip_status_mock, socket_mock
     assert rdns_return == expected_return
 
 
-def test_list_blocked_ips_rdns_failure_single_ip(get_ip_status_mock):
+def test_list_blocked_ips_rdns_failure_single_ip(get_ip_status_mock, socket_error_mock):
     rdns_return = sndslib.list_blocked_ips_rdns('0.0.0.1')
     assert rdns_return == [{'ip': '0.0.0.1', 'rdns': 'NXDOMAIN'}]
 

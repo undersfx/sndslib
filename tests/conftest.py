@@ -1,5 +1,7 @@
 import pytest
 from unittest.mock import Mock
+from sndslib import sndslib
+import socket
 
 
 IP_STATUS_VALUE = b"""1.1.1.0,1.1.1.1,Yes,Blocked due to user complaints or other evidence of spamming\r
@@ -40,3 +42,24 @@ def socket_mock(mocker):
     mock = mocker.patch('sndslib.sndslib.socket.gethostbyaddr')
     mock.return_value = ('rnds.mock.com', '', '')
     return mock
+
+
+@pytest.fixture
+def socket_error_mock(mocker):
+    mock = mocker.patch('sndslib.sndslib.socket.gethostbyaddr')
+    mock.side_effect = socket.error
+    return mock
+
+
+@pytest.fixture
+def blocked_ips_mock(get_ip_status_mock):
+    resp = sndslib.get_ip_status('test')
+    blocked_ips = sndslib.list_blocked_ips(resp)
+    return blocked_ips
+
+
+@pytest.fixture
+def blocked_ips_rdns_mock(get_ip_status_mock, socket_mock):
+    resp = sndslib.get_ip_status('test')
+    blocked_ips_with_rdns = sndslib.list_blocked_ips_rdns(resp)
+    return blocked_ips_with_rdns
