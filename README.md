@@ -1,6 +1,6 @@
 # SNDS LIB
 
-[![Build Status](https://travis-ci.org/undersfx/sndslib.svg?branch=master)](https://travis-ci.org/undersfx/sndslib) [![codecov](https://codecov.io/gh/undersfx/sndslib/branch/master/graph/badge.svg)](https://codecov.io/gh/undersfx/sndslib) [![Python 3](https://pyup.io/repos/github/undersfx/sndslib/python-3-shield.svg)](https://pyup.io/repos/github/undersfx/sndslib/) [![Updates](https://pyup.io/repos/github/undersfx/sndslib/shield.svg)](https://pyup.io/repos/github/undersfx/sndslib/)
+[![Build Status](https://www.travis-ci.com/undersfx/sndslib.svg?branch=master)](https://www.travis-ci.com/undersfx/sndslib) [![codecov](https://codecov.io/gh/undersfx/sndslib/branch/master/graph/badge.svg)](https://codecov.io/gh/undersfx/sndslib) [![Python 3](https://pyup.io/repos/github/undersfx/sndslib/python-3-shield.svg)](https://pyup.io/repos/github/undersfx/sndslib/) [![Updates](https://pyup.io/repos/github/undersfx/sndslib/shield.svg)](https://pyup.io/repos/github/undersfx/sndslib/)
 
 Process and verify data from Microsoft's Smart Network Data Service (SNDS) API easily.
 
