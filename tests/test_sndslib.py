@@ -118,7 +118,9 @@ def test_search_ip_status_return_success(get_data_urlopen_mock):
         'complaint_rate': '< 0.1%',
         'trap_message_start': '9/29/2020 8:07 AM',
         'trap_message_end': '9/29/2020 12:03 PM',
-        'traphits': '41', 'sample_helo': '',
+        'traphits': '41',
+        'sample_helo': '',
+        'sample_mailfrom': '',
         'comments': ''
         }
     assert resp_dict == expected_return
