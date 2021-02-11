@@ -82,7 +82,7 @@ def summarize(response):
     summary = {'red': 0, 'green': 0, 'yellow': 0, 'traps': 0, 'ips': len(response), 'date': ''}
 
     for ip_status in response:
-        status = format_ip_data(ip_status.split(','))
+        status = _format_ip_data(ip_status.split(','))
 
         if status['filter_result'] == 'GREEN':
             summary['green'] += 1
@@ -107,17 +107,18 @@ def search_ip_status(ip, response):
     >>> sndslib.search_ip_status('3.3.3.3', r)
     {'activity_end': '12/31/2019 7:00 PM',
     'activity_start': '12/31/2019 10:00 AM',
-    'comments': '',
     'complaint_rate': '< 0.1%',
     'data_commands': '1894',
     'filter_result': 'GREEN',
     'ip_address': '3.3.3.3',
     'message_recipients': '1894',
     'rcpt_commands': '1895',
-    'sample_helo': '',
     'trap_message_end': '',
     'trap_message_start': '',
-    'traphits': '0'}
+    'traphits': '0'
+    'sample_helo': '',
+    'sample_mailfrom': '',
+    'comments': ''}
     """
 
     for line in response:
@@ -127,27 +128,31 @@ def search_ip_status(ip, response):
     else:
         return {}
 
-    ip_data = format_ip_data(line)
+    ip_data = _format_ip_data(line)
 
     return ip_data
 
 
-def format_ip_data(ip_status):
-    ip_data = {
-        'ip_address': ip_status[0],
-        'activity_start': ip_status[1],
-        'activity_end': ip_status[2],
-        'rcpt_commands': ip_status[3],
-        'data_commands': ip_status[4],
-        'message_recipients': ip_status[5],
-        'filter_result': ip_status[6],
-        'complaint_rate': ip_status[7],
-        'trap_message_start': ip_status[8],
-        'trap_message_end': ip_status[9],
-        'traphits': ip_status[10],
-        'sample_helo': ip_status[11],
-        'comments': ip_status[12],
-    }
+def _format_ip_data(ip_status):
+    """Nomeia os dados de cada linha de status de IP com base no cabeçalho especificado pelo SNDS"""
+
+    ip_keys = (
+        'ip_address',
+        'activity_start',
+        'activity_end',
+        'rcpt_commands',
+        'data_commands',
+        'message_recipients',
+        'filter_result',
+        'complaint_rate',
+        'trap_message_start',
+        'trap_message_end',
+        'traphits',
+        'sample_helo',
+        'sample_mailfrom',
+        'comments',
+    )
+    ip_data = dict(zip(ip_keys, ip_status))
 
     return ip_data
 
