@@ -56,7 +56,7 @@ def get_data_function_mock(mocker):
 @pytest.fixture
 def socket_mock(mocker):
     mock = mocker.patch('sndslib.sndslib.socket.gethostbyaddr')
-    mock.return_value = ('rnds.mock.com', '', '')
+    mock.return_value = ('rdns.mock.com', '', '')
     return mock
 
 
