@@ -16,24 +16,40 @@ DATA_VALUE = b"""1.1.1.0,12/31/2019 8:00 AM,9/29/2020 9:00 PM,14129,14129,13025,
 
 
 @pytest.fixture
-def get_ip_status_mock(mocker):
+def get_ip_status_urlopen_mock(mocker):
     resp_mock = Mock()
     resp_mock.status = 200
     resp_mock.read.return_value = IP_STATUS_VALUE
-
     mock = mocker.patch('sndslib.sndslib.urlopen')
     mock.return_value = resp_mock
     return mock
 
 
 @pytest.fixture
-def get_data_mock(mocker):
+def get_ip_status_function_mock(mocker):
+    csv = list(IP_STATUS_VALUE.decode('utf-8').split('\r\n'))
+    csv = list(filter(None, csv))
+    mock = mocker.patch('sndslib.sndslib.get_ip_status')
+    mock.return_value = csv
+    return mock
+
+
+@pytest.fixture
+def get_data_urlopen_mock(mocker):
     resp_mock = Mock()
     resp_mock.status = 200
     resp_mock.read.return_value = DATA_VALUE
-
     mock = mocker.patch('sndslib.sndslib.urlopen')
     mock.return_value = resp_mock
+    return mock
+
+
+@pytest.fixture
+def get_data_function_mock(mocker):
+    csv = list(DATA_VALUE.decode('utf-8').split('\r\n'))
+    csv = list(filter(None, csv))
+    mock = mocker.patch('sndslib.sndslib.get_data')
+    mock.return_value = csv
     return mock
 
 
@@ -52,14 +68,15 @@ def socket_error_mock(mocker):
 
 
 @pytest.fixture
-def blocked_ips_mock(get_ip_status_mock):
+def blocked_ips_mock(get_ip_status_urlopen_mock):
     resp = sndslib.get_ip_status('test')
     blocked_ips = sndslib.list_blocked_ips(resp)
     return blocked_ips
 
 
 @pytest.fixture
-def blocked_ips_rdns_mock(get_ip_status_mock, socket_mock):
+def blocked_ips_rdns_mock(get_ip_status_urlopen_mock, socket_mock):
     resp = sndslib.get_ip_status('test')
-    blocked_ips_with_rdns = sndslib.list_blocked_ips_rdns(resp)
+    blocked_ips = sndslib.list_blocked_ips(resp)
+    blocked_ips_with_rdns = sndslib.list_blocked_ips_rdns(blocked_ips)
     return blocked_ips_with_rdns
