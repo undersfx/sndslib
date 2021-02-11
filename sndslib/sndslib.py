@@ -115,7 +115,6 @@ def search_ip_status(ip, response):
     'message_recipients': '1894',
     'rcpt_commands': '1895',
     'sample_helo': '',
-    'sample_mailfrom': '',
     'trap_message_end': '',
     'trap_message_start': '',
     'traphits': '0'}
@@ -147,7 +146,6 @@ def format_ip_data(ip_status):
         'trap_message_end': ip_status[9],
         'traphits': ip_status[10],
         'sample_helo': ip_status[11],
-        'sample_mailfrom': ip_status[11],
         'comments': ip_status[12],
     }
 
