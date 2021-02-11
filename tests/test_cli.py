@@ -129,6 +129,23 @@ def test_main_summarize(capsys, get_data_function_mock, get_ip_status_function_m
         assert s in captured.out
 
 
+def test_main_summarize_with_date(capsys, get_data_function_mock, get_ip_status_function_mock):
+    sys.argv = ['cli.py', '-k', 'test', '-s', '-d', '092920']
+    cli.main()
+    captured = capsys.readouterr()
+    expected_return = [
+        'Date: 09/29/2020 ',
+        'IPs:          3 ',
+        'Green:        1 ',
+        'Yellow:       1 ',
+        'Red:          1 ',
+        'Trap Hits:  107 ',
+        'Blocked:     11',
+        ]
+    for s in expected_return:
+        assert s in captured.out
+
+
 def test_main_list_blocked(capsys, get_data_function_mock, get_ip_status_function_mock):
     sys.argv = ['cli.py', '-k', 'test', '-l']
     cli.main()
