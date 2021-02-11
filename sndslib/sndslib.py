@@ -44,11 +44,10 @@ def get_ip_status(key):
 
     response = urlopen(f'https://sendersupport.olc.protection.outlook.com/snds/ipStatus.aspx?key={key}')
 
-    assert response.status == 200, 'Invalid return code: {}'.format(response.status)
-
-    csv = list(response.read().decode('utf-8').split('\r\n'))
-
-    csv = list(filter(None, csv))
+    csv = []
+    if response.status == 200:
+        csv = list(response.read().decode('utf-8').split('\r\n'))
+        csv = list(filter(None, csv))
 
     return csv
 
@@ -61,11 +60,10 @@ def get_data(key, date=None):
     else:
         response = urlopen(f'https://sendersupport.olc.protection.outlook.com/snds/data.aspx?key={key}')
 
-    assert response.status == 200, 'Invalid return code: {}'.format(response.status)
-
-    csv = list(response.read().decode('utf-8').split('\r\n'))
-
-    csv = list(filter(None, csv))
+    csv = []
+    if response.status == 200:
+        csv = list(response.read().decode('utf-8').split('\r\n'))
+        csv = list(filter(None, csv))
 
     return csv
 

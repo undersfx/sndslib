@@ -75,20 +75,16 @@ def main():
     rdata = None
     args = parser.parse_args()
 
-    # Conection with SNDS
-    try:
-        if args.s or args.ip:
-            if args.data:
-                rdata = sndslib.get_data(args.key, args.data)
-            else:
-                rdata = sndslib.get_data(args.key)
+    # Open SNDS Connection
+    if args.s or args.ip:
+        if args.data:
+            rdata = sndslib.get_data(args.key, args.data)
+        else:
+            rdata = sndslib.get_data(args.key)
 
-        if not args.ip:
-            rstatus = sndslib.get_ip_status(args.key)
-            blocked_ips = sndslib.list_blocked_ips(rstatus)
-    except AssertionError as e:
-        print(e)
-        return
+    if not args.ip:
+        rstatus = sndslib.get_ip_status(args.key)
+        blocked_ips = sndslib.list_blocked_ips(rstatus)
 
     # Arguments execution chain
     if args.r:
