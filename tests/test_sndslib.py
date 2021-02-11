@@ -168,17 +168,17 @@ def test_list_blocked_ips_rdns_success(get_ip_status_urlopen_mock, socket_mock):
     blocked_ips = sndslib.list_blocked_ips(resp)
     rdns_return = sndslib.list_blocked_ips_rdns(blocked_ips)
     expected_return = [
-        {'ip': '1.1.1.0', 'rdns': 'rnds.mock.com'},
-        {'ip': '1.1.1.1', 'rdns': 'rnds.mock.com'},
-        {'ip': '1.1.1.3', 'rdns': 'rnds.mock.com'},
-        {'ip': '1.1.1.254', 'rdns': 'rnds.mock.com'},
-        {'ip': '1.1.1.255', 'rdns': 'rnds.mock.com'},
-        {'ip': '1.1.2.0', 'rdns': 'rnds.mock.com'},
-        {'ip': '1.1.2.1', 'rdns': 'rnds.mock.com'},
-        {'ip': '1.1.255.255', 'rdns': 'rnds.mock.com'},
-        {'ip': '1.2.0.0', 'rdns': 'rnds.mock.com'},
-        {'ip': '1.255.255.255', 'rdns': 'rnds.mock.com'},
-        {'ip': '2.0.0.0', 'rdns': 'rnds.mock.com'},
+        {'ip': '1.1.1.0', 'rdns': 'rdns.mock.com'},
+        {'ip': '1.1.1.1', 'rdns': 'rdns.mock.com'},
+        {'ip': '1.1.1.3', 'rdns': 'rdns.mock.com'},
+        {'ip': '1.1.1.254', 'rdns': 'rdns.mock.com'},
+        {'ip': '1.1.1.255', 'rdns': 'rdns.mock.com'},
+        {'ip': '1.1.2.0', 'rdns': 'rdns.mock.com'},
+        {'ip': '1.1.2.1', 'rdns': 'rdns.mock.com'},
+        {'ip': '1.1.255.255', 'rdns': 'rdns.mock.com'},
+        {'ip': '1.2.0.0', 'rdns': 'rdns.mock.com'},
+        {'ip': '1.255.255.255', 'rdns': 'rdns.mock.com'},
+        {'ip': '2.0.0.0', 'rdns': 'rdns.mock.com'},
         ]
     assert rdns_return == expected_return
 
@@ -194,7 +194,7 @@ def test_list_blocked_ips_rdns_failure(get_ip_status_urlopen_mock, socket_error_
 
 def test_list_blocked_ips_rdns_success_single_ip(get_ip_status_urlopen_mock, socket_mock):
     rdns_return = sndslib.list_blocked_ips_rdns('1.1.1.0')
-    expected_return = [{'ip': '1.1.1.0', 'rdns': 'rnds.mock.com'}]
+    expected_return = [{'ip': '1.1.1.0', 'rdns': 'rdns.mock.com'}]
     assert rdns_return == expected_return
 
 

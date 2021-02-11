@@ -1,4 +1,4 @@
-from sndslib import cli, sndslib
+from sndslib import cli, sndslib, __version__
 
 from argparse import ArgumentParser
 import sys
@@ -40,17 +40,17 @@ def test_format_list_blocked_ips_rdns(capsys, blocked_ips_rdns_mock):
     cli.format_list_blocked_ips_rdns(blocked_ips_rdns_mock)
     captured = capsys.readouterr()
     expected_return = [
-        '1.1.1.0;rnds.mock.com',
-        '1.1.1.1;rnds.mock.com',
-        '1.1.1.3;rnds.mock.com',
-        '1.1.1.254;rnds.mock.com',
-        '1.1.1.255;rnds.mock.com',
-        '1.1.2.0;rnds.mock.com',
-        '1.1.2.1;rnds.mock.com',
-        '1.1.255.255;rnds.mock.com',
-        '1.2.0.0;rnds.mock.com',
-        '1.255.255.255;rnds.mock.com',
-        '2.0.0.0;rnds.mock.com',
+        '1.1.1.0;rdns.mock.com',
+        '1.1.1.1;rdns.mock.com',
+        '1.1.1.3;rdns.mock.com',
+        '1.1.1.254;rdns.mock.com',
+        '1.1.1.255;rdns.mock.com',
+        '1.1.2.0;rdns.mock.com',
+        '1.1.2.1;rdns.mock.com',
+        '1.1.255.255;rdns.mock.com',
+        '1.2.0.0;rdns.mock.com',
+        '1.255.255.255;rdns.mock.com',
+        '2.0.0.0;rdns.mock.com',
     ]
     for s in expected_return:
         assert s in captured.out
@@ -112,7 +112,7 @@ def test_format_ip_data(capsys, get_data_urlopen_mock):
         assert s in captured.out
 
 
-def test_main(capsys, get_data_function_mock, get_ip_status_function_mock):
+def test_main_summarize(capsys, get_data_function_mock, get_ip_status_function_mock):
     sys.argv = ['cli.py', '-k', 'test', '-s']
     cli.main()
     captured = capsys.readouterr()
@@ -127,3 +127,100 @@ def test_main(capsys, get_data_function_mock, get_ip_status_function_mock):
         ]
     for s in expected_return:
         assert s in captured.out
+
+
+def test_main_list_blocked(capsys, get_data_function_mock, get_ip_status_function_mock):
+    sys.argv = ['cli.py', '-k', 'test', '-l']
+    cli.main()
+    captured = capsys.readouterr()
+    expected_return = [
+        '1.1.1.0',
+        '1.1.1.1',
+        '1.1.1.3',
+        '1.1.1.254',
+        '1.1.1.255',
+        '1.1.2.0',
+        '1.1.2.1',
+        '1.1.255.255',
+        '1.2.0.0',
+        '1.255.255.255',
+        '2.0.0.0',
+        ]
+    for s in expected_return:
+        assert s in captured.out
+
+
+def test_main_list_ip_data_success(capsys, get_data_function_mock, get_ip_status_function_mock):
+    sys.argv = ['cli.py', '-k', 'test', '-ip', '1.1.1.2']
+    cli.main()
+    captured = capsys.readouterr()
+    expected_return = [
+        'Activity: 12/31/2019 9:00 PM until 9/29/2020 9:00 PM ',
+        'IP:         1.1.1.2 ',
+        'Messages:     12960 ',
+        'Filter:         RED ',
+        'Complaint:   < 0.1% ',
+        'Trap Hits:       26 ',
+        ]
+    for s in expected_return:
+        assert s in captured.out
+
+
+def test_main_list_ip_data_failure(capsys, get_data_function_mock, get_ip_status_function_mock):
+    sys.argv = ['cli.py', '-k', 'test', '-ip', '2.0.0.0']
+    cli.main()
+    captured = capsys.readouterr()
+    assert 'IP not found\n' in captured.out
+
+
+def test_main_list_blocked_rdns_success(capsys, get_data_function_mock, get_ip_status_function_mock, socket_mock):
+    sys.argv = ['cli.py', '-k', 'test', '-r']
+    cli.main()
+    captured = capsys.readouterr()
+    expected_return = [
+        '1.1.1.0;rdns.mock.com',
+        '1.1.1.1;rdns.mock.com',
+        '1.1.1.3;rdns.mock.com',
+        '1.1.1.254;rdns.mock.com',
+        '1.1.1.255;rdns.mock.com',
+        '1.1.2.0;rdns.mock.com',
+        '1.1.2.1;rdns.mock.com',
+        '1.1.255.255;rdns.mock.com',
+        '1.2.0.0;rdns.mock.com',
+        '1.255.255.255;rdns.mock.com',
+        '2.0.0.0;rdns.mock.com',
+        ]
+    for s in expected_return:
+        assert s in captured.out
+
+
+def test_main_list_blocked_rdns_failure(capsys, get_data_function_mock, get_ip_status_function_mock, socket_error_mock):
+    sys.argv = ['cli.py', '-k', 'test', '-r']
+    cli.main()
+    captured = capsys.readouterr()
+    expected_return = [
+        '1.1.1.0;NXDOMAIN',
+        '1.1.1.1;NXDOMAIN',
+        '1.1.1.3;NXDOMAIN',
+        '1.1.1.254;NXDOMAIN',
+        '1.1.1.255;NXDOMAIN',
+        '1.1.2.0;NXDOMAIN',
+        '1.1.2.1;NXDOMAIN',
+        '1.1.255.255;NXDOMAIN',
+        '1.2.0.0;NXDOMAIN',
+        '1.255.255.255;NXDOMAIN',
+        '2.0.0.0;NXDOMAIN',
+        ]
+    for s in expected_return:
+        assert s in captured.out
+
+
+def test_main_version(capsys):
+    sys.argv = ['cli.py', '-V']
+    try:
+        cli.main()
+    except SystemExit:
+        pass
+    finally:
+        captured = capsys.readouterr()
+    assert f'sndslib {__version__}' in captured.out
