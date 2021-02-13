@@ -121,7 +121,3 @@ def main():
 
     if args.r:
         command.list_blocked_ips_rdns()
-
-
-if __name__ == '__main__':
-    main()

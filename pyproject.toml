@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sndslib"
-version = "0.1.2"
+version = "0.1.3"
 description = "Process and verify data from SNDS easily"
 authors = ["undersfx <undersoft.corp@gmail.com>"]
 readme = "README.md"
