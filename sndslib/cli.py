@@ -7,7 +7,7 @@ from argparse import ArgumentParser
 from .__version__ import __version__
 
 
-# Argument's instructions
+# CLI's arguments logic
 parser = ArgumentParser(prog='snds', description='Searches and formats the SNDS dashboard data')
 
 parser.add_argument('-V', '--version', action='version', version=f'sndslib {__version__}',
@@ -35,73 +35,92 @@ group1.add_argument('-r', action='store_true',
                     help='returns the blocked IPs list with reverses')
 
 
-def format_list_blocked_ips(blocked_ips):
-    print('\n'.join(blocked_ips))
+# Adapter class for sndslib
+class Cli:
+    def __init__(self, key, date=None) -> None:
+        self.key = key
+        self.date = date
+        self._usage_data = None
+        self._blocked_ips = None
 
+    @property
+    def usage_data(self):
+        if not self._usage_data:
+            self._usage_data = sndslib.get_data(self.key, self.date)
+        return self._usage_data
 
-def format_list_blocked_ips_rdns(blocked_ips_rdns):
-    for ip in blocked_ips_rdns:
-        print(ip['ip'] + ';' + ip['rdns'])
+    @property
+    def blocked_ips(self):
+        if not self._blocked_ips:
+            _ip_status = sndslib.get_ip_status(self.key)
+            self._blocked_ips = sndslib.list_blocked_ips(_ip_status)
+        return self._blocked_ips
 
+    def summary(self):
+        _summary = sndslib.summarize(self.usage_data)
+        self._print_summary(_summary, self.blocked_ips)
 
-def format_ip_status(summary, blocked_ips):
-    message = (
-        f"Date: {summary['date']:>9} \n"
-        f"IPs: {summary['ips']:>10} \n"
-        f"Green: {summary['green']:>8} \n"
-        f"Yellow: {summary['yellow']:>7} \n"
-        f"Red: {summary['red']:>10} \n"
-        f"Trap Hits: {summary['traps']:>4} \n"
-        f"Blocked: {len(blocked_ips):>6}"
-    )
-    print(message)
+    def _print_summary(self, summary, blocked_ips):
+        message = (
+            f"Date: {summary['date']:>9} \n"
+            f"IPs: {summary['ips']:>10} \n"
+            f"Green: {summary['green']:>8} \n"
+            f"Yellow: {summary['yellow']:>7} \n"
+            f"Red: {summary['red']:>10} \n"
+            f"Trap Hits: {summary['traps']:>4} \n"
+            f"Blocked: {len(blocked_ips):>6}"
+        )
+        print(message)
 
-
-def format_ip_data(ipdata):
-    message = (
-        f"Activity: {ipdata['activity_start']} until {ipdata['activity_end']} \n"
-        f"IP: {ipdata['ip_address']:>15} \n"
-        f"Messages: {ipdata['message_recipients']:>9} \n"
-        f"Filter: {ipdata['filter_result']:>11} \n"
-        f"Complaint: {ipdata['complaint_rate']:>8} \n"
-        f"Trap Hits: {ipdata['traphits']:>8} \n"
-    )
-    print(message)
-
-
-# Parse and execution of the arguments
-def main():
-    blocked_ips = None
-    rdata = None
-    args = parser.parse_args()
-
-    # Open SNDS Connection
-    if args.s or args.ip:
-        if args.data:
-            rdata = sndslib.get_data(args.key, args.data)
+    def ip_data(self, ip):
+        _ip_data = sndslib.search_ip_status(ip, self.usage_data)
+        if _ip_data:
+            self._print_ip_data(_ip_data)
         else:
-            rdata = sndslib.get_data(args.key)
+            print('No data found for the given IP.')
 
-    if not args.ip:
-        rstatus = sndslib.get_ip_status(args.key)
-        blocked_ips = sndslib.list_blocked_ips(rstatus)
+    def _print_ip_data(self, ipdata):
+        message = (
+            f"Activity: {ipdata['activity_start']} until {ipdata['activity_end']} \n"
+            f"IP: {ipdata['ip_address']:>15} \n"
+            f"Messages: {ipdata['message_recipients']:>9} \n"
+            f"Filter: {ipdata['filter_result']:>11} \n"
+            f"Complaint: {ipdata['complaint_rate']:>8} \n"
+            f"Trap Hits: {ipdata['traphits']:>8} \n"
+        )
+        print(message)
 
-    # Arguments execution chain
-    if args.r:
-        rdns = sndslib.list_blocked_ips_rdns(blocked_ips)
-        format_list_blocked_ips_rdns(rdns)
-    elif args.l:
-        format_list_blocked_ips(blocked_ips)
+    def list_blocked_ips(self):
+        self._print_list_blocked_ips(self.blocked_ips)
+
+    def _print_list_blocked_ips(self, blocked_ips):
+        print('\n'.join(blocked_ips))
+
+    def list_blocked_ips_rdns(self):
+        _rdns = sndslib.list_blocked_ips_rdns(self.blocked_ips)
+        self._print_list_blocked_ips_rdns(_rdns)
+
+    def _print_list_blocked_ips_rdns(self, blocked_ips_rdns):
+        for ip in blocked_ips_rdns:
+            print(ip['ip'] + ';' + ip['rdns'])
+
+
+# Parsing and execution
+def main():
+    args = parser.parse_args()
+    command = Cli(args.key, args.data)
 
     if args.s:
-        summary = sndslib.summarize(rdata)
-        format_ip_status(summary, blocked_ips)
-    elif args.ip:
-        ipdata = sndslib.search_ip_status(args.ip, rdata)
-        if ipdata:
-            format_ip_data(ipdata)
-        else:
-            print('IP not found')
+        command.summary()
+
+    if args.ip:
+        command.ip_data(args.ip)
+
+    if args.l:
+        command.list_blocked_ips()
+
+    if args.r:
+        command.list_blocked_ips_rdns()
 
 
 if __name__ == '__main__':
