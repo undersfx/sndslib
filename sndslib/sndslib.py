@@ -39,6 +39,16 @@ import socket
 import re
 
 
+__all__ = [
+        'get_data',
+        'get_ip_status',
+        'list_blocked_ips',
+        'list_blocked_ips_rdns',
+        'search_ip_status',
+        'summarize',
+        ]
+
+
 def get_ip_status(key):
     """Busca os ranges bloqueados no SNDS Automated Data Access."""
 
@@ -160,6 +170,7 @@ def list_blocked_ips(response):
 
     >>> sndslib.get_ip_status('mykey')
     ['1.1.1.1,1.1.1.3,Yes,Blocked due to user complaints or other evidence of spamming']
+
     >>> sndslib.list_blocked_ips(r)
     [1.1.1.1, 1.1.1.2, 1.1.1.3]
     """
