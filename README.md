@@ -8,6 +8,20 @@ SNDSLIB is a wrapper around SNDS Automated Data Access API to facilitate fast da
 
 ---
 
+## Table of content
+
+- [What is SNDS?](#what-is-snds)
+- [Installation](#installation)
+- [CLI](#cli)
+	- [Summary of all IPs status](#summary-of-all-ips-status)
+	- [Individual report of a IP](#individual-report-of-a-ip)
+	- [List all IPs blocked](#list-all-ips-blocked)
+	- [List all IPs blocked with rDNS](#list-all-ips-blocked-with-rdns)
+- [Incorporate SNDSLIB CLI](#incorporate-sndslib-cli)
+- [More about SNDS](#more-about-snds)
+
+---
+
 ## What is SNDS?
 
 Smart Network Data Service (SNDS) is a platform to monitor data from IPs that send emails to Microsoft's servers.
@@ -20,7 +34,7 @@ First, you need to sign up for SNDS, [request access](https://sendersupport.olc.
 
 ## Installation
 
-SNDSLIB has no external dependancies. It runs just with python 3.6 or higher.
+SNDSLIB has no external dependencies. It runs just with python 3.6 or higher.
 
 ```bash
 pip install sndslib
