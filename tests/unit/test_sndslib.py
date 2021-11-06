@@ -4,7 +4,7 @@ import pytest
 
 
 def test_version():
-    assert __version__ == '0.1.3'
+    assert __version__ == '0.1.4'
 
 
 def test_get_ip_status_fail_without_key():

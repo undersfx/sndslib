@@ -250,3 +250,13 @@ def test_cli_class_instance():
     key = 'test'
     test_cli = cli.Cli(key)
     assert test_cli.key == key
+
+
+def test_cli_ip_status_exit_on_bad_request(capsys, urlopen_raises_httperror_mock):
+    sys.argv = ['cli.py', '-k', 'test', '-l']
+    try:
+        cli.main()
+    except SystemExit:
+        pass
+    else:
+        raise AssertionError
