@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import Mock
 from sndslib import sndslib
+from urllib.error import HTTPError
 import socket
 
 
@@ -80,3 +81,10 @@ def blocked_ips_rdns_mock(get_ip_status_urlopen_mock, socket_mock):
     blocked_ips = sndslib.list_blocked_ips(resp)
     blocked_ips_with_rdns = sndslib.list_blocked_ips_rdns(blocked_ips)
     return blocked_ips_with_rdns
+
+
+@pytest.fixture
+def urlopen_raises_httperror_mock(mocker):
+    mock = mocker.patch('sndslib.sndslib.urlopen')
+    mock.side_effect = HTTPError('test', '000', 'Mock HTTPError', {}, {})
+    return mock

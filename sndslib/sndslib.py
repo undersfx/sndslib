@@ -32,7 +32,9 @@ Exemplo de Uso:
     'traphits': '0'}
 """
 
+from sndslib.exceptions import SndsHttpError
 from urllib.request import urlopen
+from urllib.error import HTTPError
 from datetime import datetime
 import ipaddress
 import socket
@@ -52,7 +54,10 @@ __all__ = [
 def get_ip_status(key):
     """Busca os ranges bloqueados no SNDS Automated Data Access."""
 
-    response = urlopen(f'https://sendersupport.olc.protection.outlook.com/snds/ipStatus.aspx?key={key}')
+    try:
+        response = urlopen(f'https://sendersupport.olc.protection.outlook.com/snds/ipStatus.aspx?key={key}')
+    except HTTPError as e:
+        raise SndsHttpError(e)
 
     csv = []
     if response.status == 200:
@@ -65,10 +70,13 @@ def get_ip_status(key):
 def get_data(key, date=None):
     """Busca os dados de uso dos IP no SNDS Automated Data Access."""
 
-    if date:
-        response = urlopen(f'https://sendersupport.olc.protection.outlook.com/snds/data.aspx?key={key}&date={date}')
-    else:
-        response = urlopen(f'https://sendersupport.olc.protection.outlook.com/snds/data.aspx?key={key}')
+    try:
+        if date:
+            response = urlopen(f'https://sendersupport.olc.protection.outlook.com/snds/data.aspx?key={key}&date={date}')
+        else:
+            response = urlopen(f'https://sendersupport.olc.protection.outlook.com/snds/data.aspx?key={key}')
+    except HTTPError as e:
+        raise SndsHttpError(e)
 
     csv = []
     if response.status == 200:
