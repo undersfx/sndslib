@@ -52,7 +52,7 @@ __all__ = [
 
 
 def get_ip_status(key):
-    """Busca os ranges bloqueados no SNDS Automated Data Access."""
+    """Searches SNDS Automated Data Access to blocked IP ranges."""
 
     try:
         response = urlopen(f'https://sendersupport.olc.protection.outlook.com/snds/ipStatus.aspx?key={key}')
