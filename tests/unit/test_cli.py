@@ -2,6 +2,8 @@ from sndslib import cli, sndslib, __version__
 from argparse import ArgumentParser
 import sys
 
+from sndslib.utils import Presenter
+
 
 def test_cli_has_a_parser():
     assert isinstance(cli.parser, ArgumentParser)
@@ -16,8 +18,8 @@ def test_cli_description():
 
 
 def test_print_list_blocked_ips(capsys, blocked_ips_mock):
-    command = cli.Cli('test')
-    command._print_list_blocked_ips(blocked_ips_mock)
+    presenter = Presenter()
+    presenter.list_blocked_ips(blocked_ips_mock)
     captured = capsys.readouterr()
     expected_return = [
         '1.1.1.0',
@@ -37,8 +39,8 @@ def test_print_list_blocked_ips(capsys, blocked_ips_mock):
 
 
 def test_print_list_blocked_ips_rdns(capsys, blocked_ips_rdns_mock):
-    command = cli.Cli('test')
-    command._print_list_blocked_ips_rdns(blocked_ips_rdns_mock)
+    presenter = Presenter()
+    presenter.list_blocked_ips_rdns(blocked_ips_rdns_mock)
     captured = capsys.readouterr()
     expected_return = [
         '1.1.1.0;rdns.mock.com',
@@ -58,11 +60,12 @@ def test_print_list_blocked_ips_rdns(capsys, blocked_ips_rdns_mock):
 
 
 def test_print_summary_data_mock(capsys, get_data_urlopen_mock):
-    command = cli.Cli('test')
+    presenter = Presenter()
     resp = sndslib.get_data('test')
     summary = sndslib.summarize(resp)
-    command._print_summary(summary, ['1.1.1.1'])
+    presenter.summary(summary, ['1.1.1.1'])
     captured = capsys.readouterr()
+
     expected_return = [
         'Date: 09/29/2020 ',
         'IPs:          3 ',
@@ -72,6 +75,7 @@ def test_print_summary_data_mock(capsys, get_data_urlopen_mock):
         'Trap Hits:  107 ',
         'Blocked:      1',
     ]
+
     for s in expected_return:
         assert s in captured.out
 
@@ -82,9 +86,10 @@ def test_format_ip_status_blocked_ips_mock(capsys, blocked_ips_mock):
         'ips': 3, 'red': 1, 'traps': 107,
         'yellow': 1
         }
-    command = cli.Cli('test')
-    command._print_summary(summary, blocked_ips_mock)
+    presenter = Presenter()
+    presenter.summary(summary, blocked_ips_mock)
     captured = capsys.readouterr()
+
     expected_return = [
         'Date: 09/29/2020 ',
         'IPs:          3 ',
@@ -94,15 +99,18 @@ def test_format_ip_status_blocked_ips_mock(capsys, blocked_ips_mock):
         'Trap Hits:  107 ',
         'Blocked:     11',
     ]
+
     for s in expected_return:
         assert s in captured.out
 
 
 def test_format_ip_data(capsys, get_data_urlopen_mock):
     command = cli.Cli('test')
+    presenter = Presenter()
     ipdata = sndslib.search_ip_status('1.1.1.2', command.usage_data)
-    command._print_ip_data(ipdata)
+    presenter.ip_data(ipdata)
     captured = capsys.readouterr()
+
     expected_return = [
         'Activity: 12/31/2019 9:00 PM until 9/29/2020 9:00 PM ',
         'IP:         1.1.1.2 ',
@@ -111,6 +119,7 @@ def test_format_ip_data(capsys, get_data_urlopen_mock):
         'Complaint:   < 0.1% ',
         'Trap Hits:       26 ',
         ]
+
     for s in expected_return:
         assert s in captured.out
 

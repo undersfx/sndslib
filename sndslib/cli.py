@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # snds cli by @undersfx
 
-from __future__ import absolute_import
+
 from sndslib import sndslib
 from argparse import ArgumentParser
-from .__version__ import __version__
+from sndslib.__version__ import __version__
+from sndslib.utils import Presenter
 
 
 # CLI's arguments logic
@@ -17,7 +18,7 @@ parser.add_argument('-k', action='store', dest='key',
                     help='snds access key automated data access',
                     required=True)
 
-parser.add_argument('-d', action='store', dest='data',
+parser.add_argument('-d', action='store', dest='date',
                     help='returns the general status on informed date (format=MMDDYY)')
 
 group1 = parser.add_mutually_exclusive_group()
@@ -37,9 +38,10 @@ group1.add_argument('-r', action='store_true',
 
 # Adapter class for sndslib
 class Cli:
-    def __init__(self, key, date=None) -> None:
+    def __init__(self, key, date=None, presenter=Presenter()) -> None:
         self.key = key
         self.date = date
+        self.presenter = presenter
         self._usage_data = None
         self._blocked_ips = None
 
@@ -58,57 +60,26 @@ class Cli:
 
     def summary(self):
         _summary = sndslib.summarize(self.usage_data)
-        self._print_summary(_summary, self.blocked_ips)
-
-    def _print_summary(self, summary, blocked_ips):
-        message = (
-            f"Date: {summary['date']:>9} \n"
-            f"IPs: {summary['ips']:>10} \n"
-            f"Green: {summary['green']:>8} \n"
-            f"Yellow: {summary['yellow']:>7} \n"
-            f"Red: {summary['red']:>10} \n"
-            f"Trap Hits: {summary['traps']:>4} \n"
-            f"Blocked: {len(blocked_ips):>6}"
-        )
-        print(message)
+        self.presenter.summary(_summary, self.blocked_ips)
 
     def ip_data(self, ip):
-        _ip_data = sndslib.search_ip_status(ip, self.usage_data)
-        if _ip_data:
-            self._print_ip_data(_ip_data)
+        _ip_status = sndslib.search_ip_status(ip, self.usage_data)
+        if _ip_status:
+            self.presenter.ip_data(_ip_status)
         else:
             print('No data found for the given IP.')
 
-    def _print_ip_data(self, ipdata):
-        message = (
-            f"Activity: {ipdata['activity_start']} until {ipdata['activity_end']} \n"
-            f"IP: {ipdata['ip_address']:>15} \n"
-            f"Messages: {ipdata['message_recipients']:>9} \n"
-            f"Filter: {ipdata['filter_result']:>11} \n"
-            f"Complaint: {ipdata['complaint_rate']:>8} \n"
-            f"Trap Hits: {ipdata['traphits']:>8} \n"
-        )
-        print(message)
-
     def list_blocked_ips(self):
-        self._print_list_blocked_ips(self.blocked_ips)
-
-    def _print_list_blocked_ips(self, blocked_ips):
-        print('\n'.join(blocked_ips))
+        self.presenter.list_blocked_ips(self.blocked_ips)
 
     def list_blocked_ips_rdns(self):
-        _rdns = sndslib.list_blocked_ips_rdns(self.blocked_ips)
-        self._print_list_blocked_ips_rdns(_rdns)
-
-    def _print_list_blocked_ips_rdns(self, blocked_ips_rdns):
-        for ip in blocked_ips_rdns:
-            print(ip['ip'] + ';' + ip['rdns'])
+        res = sndslib.list_blocked_ips_rdns(self.blocked_ips)
+        self.presenter.list_blocked_ips_rdns(res)
 
 
-# Parsing and execution
 def main():
     args = parser.parse_args()
-    command = Cli(args.key, args.data)
+    command = Cli(args.key, args.date)
 
     if args.s:
         command.summary()
