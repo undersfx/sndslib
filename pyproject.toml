@@ -7,7 +7,7 @@ readme = "README.md"
 homepage = "https://github.com/undersfx/sndslib"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.10"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.7.9"
