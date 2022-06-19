@@ -163,10 +163,10 @@ def test_list_blocked_ips_success_value(get_ip_status_urlopen_mock):
     assert blocked_ips == expected_return
 
 
-def test_list_blocked_ips_rdns_success(get_ip_status_urlopen_mock, socket_mock):
+def test_get_ip_rdns_success(get_ip_status_urlopen_mock, socket_mock):
     resp = sndslib.get_ip_status('test')
     blocked_ips = sndslib.list_blocked_ips(resp)
-    rdns_return = sndslib.list_blocked_ips_rdns(blocked_ips)
+    rdns_return = sndslib.get_ip_rdns(blocked_ips)
     expected_return = [
         {'ip': '1.1.1.0', 'rdns': 'rdns.mock.com'},
         {'ip': '1.1.1.1', 'rdns': 'rdns.mock.com'},
@@ -183,8 +183,8 @@ def test_list_blocked_ips_rdns_success(get_ip_status_urlopen_mock, socket_mock):
     assert rdns_return == expected_return
 
 
-def test_list_blocked_ips_rdns_failure(get_ip_status_urlopen_mock, socket_error_mock):
-    rdns_return = sndslib.list_blocked_ips_rdns(['0.0.0.1', '0.0.0.1'])
+def test_get_ip_rdns_failure(get_ip_status_urlopen_mock, socket_error_mock):
+    rdns_return = sndslib.get_ip_rdns(['0.0.0.1', '0.0.0.1'])
     expected_return = [
         {'ip': '0.0.0.1', 'rdns': 'NXDOMAIN'},
         {'ip': '0.0.0.1', 'rdns': 'NXDOMAIN'}
@@ -192,17 +192,17 @@ def test_list_blocked_ips_rdns_failure(get_ip_status_urlopen_mock, socket_error_
     assert rdns_return == expected_return
 
 
-def test_list_blocked_ips_rdns_success_single_ip(get_ip_status_urlopen_mock, socket_mock):
-    rdns_return = sndslib.list_blocked_ips_rdns('1.1.1.0')
+def test_get_ip_rdns_success_single_ip(get_ip_status_urlopen_mock, socket_mock):
+    rdns_return = sndslib.get_ip_rdns('1.1.1.0')
     expected_return = [{'ip': '1.1.1.0', 'rdns': 'rdns.mock.com'}]
     assert rdns_return == expected_return
 
 
-def test_list_blocked_ips_rdns_failure_single_ip(get_ip_status_urlopen_mock, socket_error_mock):
-    rdns_return = sndslib.list_blocked_ips_rdns('0.0.0.1')
+def test_get_ip_rdns_failure_single_ip(get_ip_status_urlopen_mock, socket_error_mock):
+    rdns_return = sndslib.get_ip_rdns('0.0.0.1')
     assert rdns_return == [{'ip': '0.0.0.1', 'rdns': 'NXDOMAIN'}]
 
 
-def test_list_blocked_ips_rdns_empty_list(get_ip_status_urlopen_mock):
-    rdns_return = sndslib.list_blocked_ips_rdns([])
+def test_get_ip_rdns_empty_list(get_ip_status_urlopen_mock):
+    rdns_return = sndslib.get_ip_rdns([])
     assert rdns_return == []

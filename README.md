@@ -78,7 +78,7 @@ Simple example of library usage:
     ['1.1.1.1', '1.1.1.2']
 
     # Even get all rdns for these IPs
-    >>> sndslib.list_blocked_ips_rdns(blocked_ips)
+    >>> sndslib.get_ip_rdns(blocked_ips)
     [{'ip': '1.1.1.1', 'rdns': 'foo.bar.exemple.com'},
      {'ip': '1.1.1.2', 'rdns': 'foo2.bar.exemple.com'}]
 ```
@@ -169,7 +169,7 @@ You can easily incorporate the sndslib CLI into your own command line tool by us
     command.list_blocked_ips()
 
     # to implement -r flag use
-    command.list_blocked_ips_rdns()
+    command.get_ip_rdns()
 ```
 
 ---

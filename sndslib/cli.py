@@ -73,7 +73,7 @@ class Cli:
         self.presenter.list_blocked_ips(self.blocked_ips)
 
     def list_blocked_ips_rdns(self):
-        res = sndslib.list_blocked_ips_rdns(self.blocked_ips)
+        res = sndslib.get_ip_rdns(self.blocked_ips)
         self.presenter.list_blocked_ips_rdns(res)
 
 

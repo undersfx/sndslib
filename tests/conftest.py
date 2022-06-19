@@ -79,7 +79,7 @@ def blocked_ips_mock(get_ip_status_urlopen_mock):
 def blocked_ips_rdns_mock(get_ip_status_urlopen_mock, socket_mock):
     resp = sndslib.get_ip_status('test')
     blocked_ips = sndslib.list_blocked_ips(resp)
-    blocked_ips_with_rdns = sndslib.list_blocked_ips_rdns(blocked_ips)
+    blocked_ips_with_rdns = sndslib.get_ip_rdns(blocked_ips)
     return blocked_ips_with_rdns
 
 

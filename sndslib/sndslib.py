@@ -2,9 +2,9 @@
 # sndslib by @undersfx
 
 r"""
-Facilita a administração dos IPs listados no painel Sender Network Data Service (Microsoft).
+Wrapper library for Microsoft's SNDS Automated Data Access that provides a better API and an easy to use CLI.
 
-Exemplo de Uso:
+Usage:
 
     >>> from sndslib import sndslib
     >>> r = sndslib.get_ip_status('mykey')
@@ -36,6 +36,7 @@ from sndslib.exceptions import SndsHttpError
 from urllib.request import urlopen
 from urllib.error import HTTPError
 from datetime import datetime
+from ipaddress import IPv4Address
 import ipaddress
 import socket
 import re
@@ -45,14 +46,14 @@ __all__ = [
         'get_data',
         'get_ip_status',
         'list_blocked_ips',
-        'list_blocked_ips_rdns',
+        'get_ip_rdns',
         'search_ip_status',
         'summarize',
         ]
 
 
 def get_ip_status(key):
-    """Searches SNDS Automated Data Access to blocked IP ranges."""
+    """Get blocked IP ranges from SNDS Automated Data Access."""
 
     try:
         response = urlopen(f'https://sendersupport.olc.protection.outlook.com/snds/ipStatus.aspx?key={key}')
@@ -68,7 +69,7 @@ def get_ip_status(key):
 
 
 def get_data(key, date=None):
-    """Busca os dados de uso dos IP no SNDS Automated Data Access."""
+    """Get IP usage data from SNDS Automated Data Access."""
 
     try:
         if date:
@@ -87,18 +88,17 @@ def get_data(key, date=None):
 
 
 def summarize(response):
-    """Recebe a tabela com dados de uso dos IPs (sndslib.get_data) e retorna o status geral.
+    """Calculates a summary based on the IP usage response (sndslib.get_data).
 
     >>> r = sndslib.get_data('mykey')
     >>> sndslib.summarize(r)
     {'red': 272, 'green': 710, 'yellow': 852, 'traps': 1298, 'ips': 1834, 'date': '12/31/2019'}
     """
 
-    # Contagem de incidências do status e total de spamtraps
     summary = {'red': 0, 'green': 0, 'yellow': 0, 'traps': 0, 'ips': len(response), 'date': ''}
 
     for ip_status in response:
-        status = _format_ip_data(ip_status.split(','))
+        status = _adapt_ip_data(ip_status)
 
         if status['filter_result'] == 'GREEN':
             summary['green'] += 1
@@ -117,7 +117,7 @@ def summarize(response):
 
 
 def search_ip_status(ip, response):
-    """Porcura pelos status de um IP especifico nos dados de uso de IP (sndslib.get_data).
+    """Get a specific IP status based on the IP usage response (sndslib.get_data).
 
     >>> r = sndslib.get_data('mykey')
     >>> sndslib.search_ip_status('3.3.3.3', r)
@@ -139,18 +139,17 @@ def search_ip_status(ip, response):
 
     for line in response:
         if re.search(ip, line):
-            line = line.split(',')
             break
     else:
         return {}
 
-    ip_data = _format_ip_data(line)
+    ip_data = _adapt_ip_data(line)
 
     return ip_data
 
 
-def _format_ip_data(ip_status):
-    """Nomeia os dados de cada linha de status de IP com base no cabeçalho especificado pelo SNDS"""
+def _adapt_ip_data(ip_status):
+    """Adapt the data from response into a dict based on the response header"""
 
     ip_keys = (
         'ip_address',
@@ -168,13 +167,14 @@ def _format_ip_data(ip_status):
         'sample_mailfrom',
         'comments',
     )
-    ip_data = dict(zip(ip_keys, ip_status))
+
+    ip_data = dict(zip(ip_keys, ip_status.split(',')))
 
     return ip_data
 
 
 def list_blocked_ips(response):
-    """Calcula a lista de IPs bloqueados com base na lista de ranges bloqueados (sndslib.get_ip_status).
+    """Calculates the list of blocked IPs based on the ip status response (sndslib.get_ip_status).
 
     >>> sndslib.get_ip_status('mykey')
     ['1.1.1.1,1.1.1.3,Yes,Blocked due to user complaints or other evidence of spamming']
@@ -182,56 +182,38 @@ def list_blocked_ips(response):
     >>> sndslib.list_blocked_ips(r)
     [1.1.1.1, 1.1.1.2, 1.1.1.3]
     """
-    # Lista que receberá o total de IPs bloqueados
-    lista = []
-    # Calcula a diferença entre IP de inicio fim do range bloqueado
-    for value in response:
-        inicial = ipaddress.IPv4Address(value.split(',')[0])
-        final = ipaddress.IPv4Address(value.split(',')[1])
 
-        lista.append(str(inicial))
-        # Calcula o próximo IP bloqueado se existir mais de um no range
-        while inicial != final:
-            inicial += 1
-            # Adiciona IP atualizado a lista
-            lista.append(str(inicial))
+    list_of_blocked_ips = []
+    for line in response:
+        first_ip = IPv4Address(line.split(',')[0])
+        last_ip = IPv4Address(line.split(',')[1])
 
-    return lista
+        for network in ipaddress.summarize_address_range(first_ip, last_ip):
+            for host in network:
+                list_of_blocked_ips.append(str(host))
+
+    return list_of_blocked_ips
 
 
-def list_blocked_ips_rdns(ips: list) -> list:
-    """Busca o host de uma lista de endereços IP (sndslib.list_blocked_ips).
+def get_ip_rdns(ips) -> list:
+    """Get the reverse DNS of a IP or a list of IPs.
 
-    >>> sndslib.list_blocked_ips_rdns(['1.1.1.1', '1.1.1.2'])
+    >>> sndslib.get_ip_rdns(['1.1.1.1', '1.1.1.2'])
     [{'ip': '1.1.1.1', 'rdns': 'foo.bar.exemple.com'}, {'ip': '1.1.1.2', 'rdns': 'foo2.bar.exemple.com'}]
 
-    No caso do IP não tem um rDNS válido ou retornar erro na pesquisa, o retorno será 'NXDOMAIN'
-    >>> sndslib.list_blocked_ips_rdns(['0.0.0.1'])
+    In case there are no valid rDNS for this IP, the return will be a domain error (NXDOMAIN).
+    >>> sndslib.get_ip_rdns(['0.0.0.1'])
     [{'ip': '0.0.0.1', 'rdns': 'NXDOMAIN'}]
     """
 
-    data = []
-
-    if not isinstance(ips, list):
-        # Caso seja passado apenas um IP
-        ip = str(ips)
+    def get_rdns(ip):
         try:
-            rdns = socket.gethostbyaddr(ip)[0]
+            rdns = socket.gethostbyaddr(str(ip))[0]
         except socket.error:
-            # 'socket.gethostbyaddr' levanta exceção caso o IP não tenha rdns
             rdns = 'NXDOMAIN'
+        return {'ip': ip, 'rdns': rdns}
 
-        data.append({'ip': ip, 'rdns': rdns})
+    if isinstance(ips, list):
+        return [get_rdns(ip) for ip in ips]
 
-        return data
-    else:
-        # Caso seja passada uma lista de IPs
-        for ip in ips:
-            try:
-                rdns = socket.gethostbyaddr(ip)[0]
-            except socket.error:
-                rdns = 'NXDOMAIN'
-
-            data.append({'ip': str(ip), 'rdns': rdns})
-
-        return data
+    return [get_rdns(ips)]
