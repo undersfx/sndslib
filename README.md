@@ -1,6 +1,6 @@
 # SNDS LIB
 
-[![Build Status](https://www.travis-ci.com/undersfx/sndslib.svg?branch=master)](https://www.travis-ci.com/undersfx/sndslib) [![codecov](https://codecov.io/gh/undersfx/sndslib/branch/master/graph/badge.svg)](https://codecov.io/gh/undersfx/sndslib) [![Python 3](https://pyup.io/repos/github/undersfx/sndslib/python-3-shield.svg)](https://pyup.io/repos/github/undersfx/sndslib/) [![Updates](https://pyup.io/repos/github/undersfx/sndslib/shield.svg)](https://pyup.io/repos/github/undersfx/sndslib/) [![Total alerts](https://img.shields.io/lgtm/alerts/g/undersfx/sndslib.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/undersfx/sndslib/alerts/) [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/undersfx/sndslib.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/undersfx/sndslib/context:python)
+[![Build Status](https://www.travis-ci.com/undersfx/sndslib.svg?branch=master)](https://www.travis-ci.com/undersfx/sndslib) [![codecov](https://codecov.io/gh/undersfx/sndslib/branch/master/graph/badge.svg)](https://codecov.io/gh/undersfx/sndslib) [![Total alerts](https://img.shields.io/lgtm/alerts/g/undersfx/sndslib.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/undersfx/sndslib/alerts/) [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/undersfx/sndslib.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/undersfx/sndslib/context:python)
 
 Process and verify data from Microsoft's Smart Network Data Service (SNDS) API easily.
 
