@@ -6,9 +6,9 @@ from sndslib import sndslib
 from argparse import ArgumentParser
 from sndslib.__version__ import __version__
 from sndslib.utils import Presenter
+from sndslib.exceptions import SndsHttpError, SndsCliError
 
 
-# CLI's arguments logic
 parser = ArgumentParser(prog='snds', description='Searches and formats the SNDS dashboard data')
 
 parser.add_argument('-V', '--version', action='version', version=f'sndslib {__version__}',
@@ -36,7 +36,6 @@ group1.add_argument('-r', action='store_true',
                     help='returns the blocked IPs list with reverses')
 
 
-# Adapter class for sndslib
 class Cli:
     def __init__(self, key, date=None, presenter=Presenter()) -> None:
         self.key = key
@@ -81,14 +80,17 @@ def main():
     args = parser.parse_args()
     command = Cli(args.key, args.date)
 
-    if args.s:
-        command.summary()
+    try:
+        if args.s:
+            command.summary()
 
-    if args.ip:
-        command.ip_data(args.ip)
+        if args.ip:
+            command.ip_data(args.ip)
 
-    if args.l:
-        command.list_blocked_ips()
+        if args.l:
+            command.list_blocked_ips()
 
-    if args.r:
-        command.list_blocked_ips_rdns()
+        if args.r:
+            command.list_blocked_ips_rdns()
+    except SndsHttpError as e:
+        raise SndsCliError(e)
