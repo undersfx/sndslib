@@ -27,7 +27,6 @@ jobs:
         pip install poetry
         poetry install
         poetry add codecov
-        poetry run pip install .
 
     - name: Lint
       run: |
@@ -39,4 +38,6 @@ jobs:
 
     - name: Entrypoint
       run: |
+        poetry build --format wheel
+        pip install dist/sndslib-0.1.4-py3-none-any.whl
         snds -V
