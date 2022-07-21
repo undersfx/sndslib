@@ -18,6 +18,5 @@ pytest = "^7.1.2"
 [tool.poetry.scripts]
 snds = 'sndslib.cli:main'
 [build-system]
-requires = ["poetry>=0.12"]
+requires = ["poetry>=0.12", "editables", "wheel", "setuptools"]
 build-backend = "poetry.masonry.api"
-
