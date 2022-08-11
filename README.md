@@ -1,10 +1,13 @@
 # SNDS LIB
 
+by [Thiago Rodrigues](https://github.com/undersfx)
+
+
 [![Build Status](https://www.travis-ci.com/undersfx/sndslib.svg?branch=master)](https://www.travis-ci.com/undersfx/sndslib) [![codecov](https://codecov.io/gh/undersfx/sndslib/branch/master/graph/badge.svg)](https://codecov.io/gh/undersfx/sndslib) [![Total alerts](https://img.shields.io/lgtm/alerts/g/undersfx/sndslib.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/undersfx/sndslib/alerts/) [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/undersfx/sndslib.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/undersfx/sndslib/context:python)
 
-Process and verify data from Microsoft's Smart Network Data Service (SNDS) API easily.
+[SNDSLIB](https://github.com/undersfx/sndslib) helps you easily process and analyse data from Microsoft's Smart Network Data Service (SNDS).
 
-SNDSLIB is a wrapper around SNDS Automated Data Access API to facilitate fast data process and analysis.
+It interacts with the Automated Data Access API for you through simple module or command line interfaces.
 
 ---
 
@@ -32,9 +35,17 @@ First, you need to sign up for SNDS, [request access](https://sendersupport.olc.
 
 ---
 
+
+## Requirements
+
+To install SNDS you need:
+
+- Python 3.6 or later
+
+
 ## Installation
 
-SNDSLIB has no external dependencies. It runs just with python 3.6 or higher.
+SNDSLIB has no external dependencies. You get it with the package installer:
 
 ```bash
 pip install sndslib
