@@ -41,3 +41,14 @@ jobs:
         poetry build --format wheel
         pip install dist/sndslib-0.1.4-py3-none-any.whl
         snds -V
+
+  release:
+    name: Release version
+    if: startsWith(github.ref, 'refs/tags/releases/')
+    needs: build
+    steps:
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10"
+      run: |
+        poetry publish -u ${{ secrets.PYPI_USER }} -p ${{ secrets.PYPI_API_KEY }}
